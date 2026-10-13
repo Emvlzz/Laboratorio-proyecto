@@ -9,41 +9,38 @@ const JWT_SECRET = 'tu_clave_secreta_super_segura';
 // 1. Ruta de Registro
 router.post('/register', async (req, res) => {
     try {
-        const { nombre, apellido, curso, email, password, rol } = req.body;
+        const { nombre, apellido, curso, credenciales, password, rol } = req.body;
 
-        // Buscamos usando 'credenciales' (que es como se llama la columna en tu BD)
-        const usuarioExistente = await Usuario.findOne({ where: { credenciales: email } });
-        if (usuarioExistente) {
-            return res.status(400).json({ msg: 'El correo electrónico ya está registrado.' });
+        if (!credenciales || !password || !nombre) {
+            return res.status(400).json({ msg: 'Faltan campos obligatorios.' });
         }
 
-        // Encriptar la contraseña
+        // Verificar si ya existe
+        const existe = await Usuario.findOne({ where: { credenciales } });
+        if (existe) {
+            return res.status(400).json({ msg: 'El usuario ya está registrado.' });
+        }
+
+        // Hashear contraseña
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Crear el usuario asignando el email del formulario a la columna 'credenciales'
+        // Crear el usuario con todos los campos
         const nuevoUsuario = await Usuario.create({
             nombre,
-            apellido: apellido || '',
-            curso: curso || 'General',
-            credenciales: email, 
+            apellido: apellido || null,
+            curso: curso || null,
+            credenciales,
             password: hashedPassword,
             rol: rol || 'alumno'
         });
 
-        return res.status(201).json({ 
-            msg: '¡Usuario registrado con éxito!', 
-            usuario: { 
-                id: nuevoUsuario.idUsuario, 
-                nombre: nuevoUsuario.nombre, 
-                credenciales: nuevoUsuario.credenciales, 
-                rol: nuevoUsuario.rol 
-            } 
-        });
+        res.status(201).json({ msg: 'Usuario registrado con éxito', usuario: nuevoUsuario });
     } catch (error) {
         console.error("Error en /register:", error);
-        return res.status(500).json({ msg: 'Error interno en el servidor', error: error.message });
+        res.status(500).json({ msg: 'Error interno en el servidor', error: error.message });
     }
 });
+
 
 router.post('/login', async (req, res) => {
     try {

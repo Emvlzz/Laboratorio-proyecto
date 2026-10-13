@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
-import { useNavigate, Link } from 'react-router-dom'; // <--- Importamos Link
+import { useNavigate, Link } from 'react-router-dom';
 
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('usuarios');
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
     };
 
     return (
-        <div style={{ padding: '30px', fontFamily: 'sans-serif', maxWidth: '1100px', margin: '0 auto' }}>
+        <div style={{ padding: '30px', fontFamily: 'sans-serif', maxWidth: '1200px', margin: '0 auto' }}>
             
             {/* Botón para ir atrás */}
             <div style={{ marginBottom: '20px' }}>
@@ -150,11 +150,13 @@ export default function AdminDashboard() {
             {/* TABLA USUARIOS */}
             {activeTab === 'usuarios' && (
                 <div>
-                    <h3>Gestión de Usuarios y Asignación de Equipos</h3>
+                    <h3>Gestión de Usuarios (Alumnos, Profesores y Administradores)</h3>
                     <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
                         <thead>
                             <tr style={{ background: '#f1f1f1', textAlign: 'left' }}>
                                 <th style={{ padding: '10px', border: '1px solid #ddd' }}>Nombre</th>
+                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Apellido</th>
+                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Curso / Aula</th>
                                 <th style={{ padding: '10px', border: '1px solid #ddd' }}>Credencial</th>
                                 <th style={{ padding: '10px', border: '1px solid #ddd' }}>Rol</th>
                                 <th style={{ padding: '10px', border: '1px solid #ddd' }}>Computadora Asignada</th>
@@ -165,9 +167,11 @@ export default function AdminDashboard() {
                             {usuarios.map(u => (
                                 <tr key={u.idUsuario}>
                                     <td style={{ padding: '10px', border: '1px solid #ddd' }}>{u.nombre}</td>
+                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{u.apellido || '-'}</td>
+                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{u.curso || '-'}</td>
                                     <td style={{ padding: '10px', border: '1px solid #ddd' }}>{u.credenciales}</td>
                                     <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                                        <span style={{ padding: '3px 8px', borderRadius: '4px', background: u.rol === 'administrador' ? '#ffc107' : '#e2e3e5', fontSize: '12px' }}>
+                                        <span style={{ padding: '3px 8px', borderRadius: '4px', background: u.rol === 'administrador' ? '#ffc107' : '#e2e3e5', fontSize: '12px', textTransform: 'capitalize' }}>
                                             {u.rol}
                                         </span>
                                     </td>
@@ -177,7 +181,7 @@ export default function AdminDashboard() {
                                             onChange={(e) => handleAsignarComputadora(u.idUsuario, e.target.value)}
                                             style={{ padding: '6px', width: '100%' }}
                                         >
-                                            <option value="">-- Sin computadora asignada --</option>
+                                            <option value="">-- Sin asignar --</option>
                                             {computadoras.map(c => (
                                                 <option key={c.idComputadora} value={c.idComputadora}>
                                                     {c.nombre} {c.carrito ? `(Carrito: ${c.carrito.nombre})` : ''}
