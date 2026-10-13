@@ -15,7 +15,7 @@ const Computadora = sequelize.define('Computadora', {
         type: DataTypes.STRING,
         allowNull: true
     },
-    carritoId: { // Clave foránea para asociarla a un carrito
+    carritoId: {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {

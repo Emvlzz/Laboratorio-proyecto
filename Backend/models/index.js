@@ -1,11 +1,11 @@
 const sequelize = require('../config/db');
 
-// 1. Primero los modelos independientes (Padres)
+
 const Usuario = require('./Usuario');
 const Carrito = require('./Carrito');
 const Inventario = require('./Inventario');
 
-// 2. Luego los modelos dependientes (Hijos que usan llaves foráneas)
+
 const Computadora = require('./Computadora');
 const Reporte = require('./Reporte');
 const Auditoria = require('./Auditoria');

@@ -45,7 +45,6 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// 2. Ruta de Login
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -62,9 +61,14 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ msg: 'Contraseña incorrecta.' });
         }
 
-        // Generar el Token JWT
+        // Generar el Token JWT (Añadimos 'nombre' aquí 👇)
         const token = jwt.sign(
-            { id: usuario.idUsuario, rol: usuario.rol, credenciales: usuario.credenciales }, 
+            { 
+                id: usuario.idUsuario, 
+                rol: usuario.rol, 
+                credenciales: usuario.credenciales, 
+                nombre: usuario.nombre // <--- ¡Asegúrate de incluir esto!
+            }, 
             JWT_SECRET, 
             { expiresIn: '2h' }
         );
@@ -80,5 +84,4 @@ router.post('/login', async (req, res) => {
         return res.status(500).json({ msg: 'Error interno en el servidor', error: error.message });
     }
 });
-
 module.exports = router;

@@ -1,5 +1,5 @@
 const express = require("express");
-const sequelize = require('./config/db'); // <--- ¡Sin llaves!
+const sequelize = require('./config/db');
 const miMiddleware = require('./middlewares/auth');
 
 // Importación de rutas
@@ -14,7 +14,7 @@ const carritoRoutes = require('./routes/carritoRoutes');
 const server = express();
 server.use(express.json());
 
-// Configuración de CORS manual
+
 server.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');

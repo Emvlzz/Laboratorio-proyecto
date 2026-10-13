@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // <--- Importamos Link
 
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('usuarios');
@@ -65,7 +65,6 @@ export default function AdminDashboard() {
         }
     };
 
-    // Asignar computadora a un usuario
     const handleAsignarComputadora = async (userId, computadoraId) => {
         try {
             await api.put(`/Usuarios/${userId}/computadora`, { computadoraId }, getAuthHeaders());
@@ -116,6 +115,26 @@ export default function AdminDashboard() {
 
     return (
         <div style={{ padding: '30px', fontFamily: 'sans-serif', maxWidth: '1100px', margin: '0 auto' }}>
+            
+            {/* Botón para ir atrás */}
+            <div style={{ marginBottom: '20px' }}>
+                <Link 
+                    to="/" 
+                    style={{ 
+                        display: 'inline-block', 
+                        padding: '8px 16px', 
+                        background: '#6c757d', 
+                        color: '#fff', 
+                        textDecoration: 'none', 
+                        borderRadius: '4px', 
+                        fontWeight: 'bold',
+                        fontSize: '14px'
+                    }}
+                >
+                    ← Volver al Inicio
+                </Link>
+            </div>
+
             <h2>Panel de Administración - Laboratorio</h2>
             
             {msg && <p style={{ color: 'green', fontWeight: 'bold' }}>{msg}</p>}
@@ -128,7 +147,7 @@ export default function AdminDashboard() {
                 <button onClick={() => setActiveTab('carritos')} style={{ padding: '10px 20px', background: activeTab === 'carritos' ? '#007bff' : '#f8f9fa', color: activeTab === 'carritos' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Carritos</button>
             </div>
 
-            {/* TABLA USUARIOS (Con asignación de computadora) */}
+            {/* TABLA USUARIOS */}
             {activeTab === 'usuarios' && (
                 <div>
                     <h3>Gestión de Usuarios y Asignación de Equipos</h3>

@@ -15,7 +15,7 @@ const Carrito = sequelize.define('Carrito', {
         type: DataTypes.STRING,
         allowNull: true
     },
-    curso: { // Curso o aula asignado al carrito
+    curso: {
         type: DataTypes.STRING,
         allowNull: false
     }

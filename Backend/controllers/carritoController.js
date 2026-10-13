@@ -13,10 +13,8 @@ exports.crearCarritoConEquipos = async (req, res) => {
     try {
         const { codigo, aulaId } = req.body;
         
-        // Crear el carrito
         const carrito = await Carrito.create({ codigo, aulaId });
 
-        // Crear automáticamente las 32 computadoras (Equipo 1: Profesor, Equipos 2-32: Alumnos)
         const computadoras = [];
         for (let i = 1; i <= 32; i++) {
             computadoras.push({
