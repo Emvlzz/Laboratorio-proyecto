@@ -10,6 +10,9 @@ const profesorRoutes = require('./routes/profesorRoutes');
 const aulaRoutes = require('./routes/aulaRoutes');
 const computadoraRoutes = require('./routes/computadoraRoutes');
 const carritoRoutes = require('./routes/carritoRoutes');
+const inventarioRoutes = require('./routes/inventarioRoutes');
+const reporteRoutes = require('./routes/reporteRoutes');
+const auditoriaRoutes = require('./routes/auditoriaRoutes');
 
 const server = express();
 server.use(express.json());
@@ -36,12 +39,15 @@ server.get('/', (req, res) => {
 server.use('/auth', authRoutes);
 
 // 2. Rutas protegidas con el middleware de autenticación
-server.use('/Usuarios', miMiddleware, UsuariosRoutes);
-server.use('/alumnos', miMiddleware, alumnoRoutes);
-server.use('/profesores', miMiddleware, profesorRoutes);
-server.use('/aulas', miMiddleware, aulaRoutes);
-server.use('/computadoras', miMiddleware, computadoraRoutes);
-server.use('/carritos', miMiddleware, carritoRoutes);
+server.use('/Usuarios', miMiddleware.verificarToken, UsuariosRoutes);
+server.use('/alumnos', miMiddleware.verificarToken, alumnoRoutes);
+server.use('/profesores', miMiddleware.verificarToken, profesorRoutes);
+server.use('/aulas', miMiddleware.verificarToken, aulaRoutes);
+server.use('/computadoras', miMiddleware.verificarToken, computadoraRoutes);
+server.use('/carritos', miMiddleware.verificarToken, carritoRoutes);
+server.use('/inventario',miMiddleware.verificarToken, inventarioRoutes);
+server.use('/reportes',miMiddleware.verificarToken, reporteRoutes);
+server.use('/auditoria',miMiddleware.verificarToken, auditoriaRoutes);
 
 const PORT = 3000;
 

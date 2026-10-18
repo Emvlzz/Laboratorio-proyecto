@@ -44,7 +44,6 @@ router.put('/:id/computadora', async (req, res) => {
     }
 });
 
-// (Mantén aquí tu ruta DELETE de usuarios si ya la tenías)
 router.delete('/:id', async (req, res) => {
     try {
         if (req.user && req.user.rol !== 'administrador') {

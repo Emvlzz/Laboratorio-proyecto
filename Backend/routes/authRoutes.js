@@ -4,7 +4,7 @@ const { Usuario } = require('../models');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = 'tu_clave_secreta_super_segura';
+const JWT_SECRET = 'mordekaiser';
 
 // 1. Ruta de Registro
 router.post('/register', async (req, res) => {
