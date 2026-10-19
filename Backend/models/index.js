@@ -5,7 +5,6 @@ const Carrito = require('./Carrito');
 const Inventario = require('./Inventario');
 const Computadora = require('./Computadora');
 const Reporte = require('./Reporte');
-const Auditoria = require('./Auditoria');
 
 
 
@@ -26,9 +25,6 @@ Computadora.hasMany(Reporte, { foreignKey: 'computadoraId', as: 'reportes' });
 Reporte.belongsTo(Computadora, { foreignKey: 'computadoraId', as: 'computadora' });
 
 
-// Un usuario puede tener muchos registros en la bitácora
-Usuario.hasMany(Auditoria, { foreignKey: 'idUsuario' });
-Auditoria.belongsTo(Usuario, { foreignKey: 'idUsuario' }); // Por defecto Sequelize buscará 'idUsuario' en Auditoria
 
 module.exports = {
     sequelize,
@@ -36,7 +32,6 @@ module.exports = {
     Carrito,
     Computadora,
     Inventario,
-    Reporte,
-    Auditoria
+    Reporte
 };
 

@@ -9,7 +9,6 @@ export default function AdminDashboard() {
     const [carritos, setCarritos] = useState([]);
     const [reportes, setReportes] = useState([]);
     const [inventario, setInventario] = useState([]);
-    const [bitacora, setBitacora] = useState([]);
 
     // Formularios Computadoras
     const [compNombre, setCompNombre] = useState('');
@@ -43,13 +42,12 @@ export default function AdminDashboard() {
             setError('');
             const headers = getAuthHeaders();
 
-            const [resUsers, resComps, resCarritos, resReportes, resInventario, resBitacora] = await Promise.all([
+            const [resUsers, resComps, resCarritos, resReportes, resInventario] = await Promise.all([
                 api.get('/Usuarios', headers),
                 api.get('/computadoras', headers),
                 api.get('/carritos', headers),
                 api.get('/reportes', headers),
-                api.get('/inventario', headers),
-                api.get('/auditoria', headers)
+                api.get('/inventario', headers)
             ]);
 
             setUsuarios(resUsers.data);
@@ -57,7 +55,7 @@ export default function AdminDashboard() {
             setCarritos(resCarritos.data);
             setReportes(resReportes.data);
             setInventario(resInventario.data);
-            setBitacora(resBitacora.data);
+
         } catch (err) {
             setError(err.response?.data?.msg || 'Error al cargar los datos');
             if (err.response?.status === 401 || err.response?.status === 403) {
@@ -99,7 +97,7 @@ export default function AdminDashboard() {
 
     const handleCambiarEstadoReporte = async (idReporte, nuevoEstado) => {
         try {
-            await api.put(`/reportes/${idReporte}/estado`, { estado: nuevoEstado }, getAuthHeaders());
+            await api.put(`/reportes/${idReporte}`, { estado: nuevoEstado }, getAuthHeaders());
             setMsg('¡Estado del reporte actualizado!');
             fetchData();
         } catch (err) {
@@ -200,9 +198,10 @@ export default function AdminDashboard() {
                 <button onClick={() => setActiveTab('carritos')} style={{ padding: '10px 20px', background: activeTab === 'carritos' ? '#007bff' : '#f8f9fa', color: activeTab === 'carritos' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Carritos</button>
                 <button onClick={() => setActiveTab('reportes')} style={{ padding: '10px 20px', background: activeTab === 'reportes' ? '#007bff' : '#f8f9fa', color: activeTab === 'reportes' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Reportes</button>
                 <button onClick={() => setActiveTab('inventario')} style={{ padding: '10px 20px', background: activeTab === 'inventario' ? '#007bff' : '#f8f9fa', color: activeTab === 'inventario' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Inventario</button>
-                <button onClick={() => setActiveTab('bitacora')} style={{ padding: '10px 20px', background: activeTab === 'bitacora' ? '#007bff' : '#f8f9fa', color: activeTab === 'bitacora' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Bitácora</button>
+                <button onClick={() => setActiveTab('bitacora')} style={{ padding: '10px 20px', background: activeTab === 'bitacora' ? '#007bff' : '#f8f9fa', color: activeTab === 'bitacora' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Bitácora (Reportes)</button>
             </div>
-          {/* TABLA USUARIOS */}
+
+            {/* TABLA USUARIOS */}
             {activeTab === 'usuarios' && (
                 <div>
                     <h3>Gestión de Usuarios (Alumnos, Profesores y Administradores)</h3>
@@ -358,14 +357,13 @@ export default function AdminDashboard() {
             {/* REPORTES */}
             {activeTab === 'reportes' && (
                 <div>
-                    <h3>Reportes de Estado de Computadoras</h3>
+                    <h3>Registro de Reportes del Sistema</h3>
                     <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
                         <thead>
                             <tr style={{ background: '#f1f1f1', textAlign: 'left' }}>
                                 <th style={{ padding: '10px', border: '1px solid #ddd' }}>ID</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Autor / Usuario</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Computadora</th>
                                 <th style={{ padding: '10px', border: '1px solid #ddd' }}>Descripción</th>
+                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Fecha / Hora</th>
                                 <th style={{ padding: '10px', border: '1px solid #ddd' }}>Estado</th>
                                 <th style={{ padding: '10px', border: '1px solid #ddd' }}>Acciones</th>
                             </tr>
@@ -374,13 +372,8 @@ export default function AdminDashboard() {
                             {reportes.map(r => (
                                 <tr key={r.idReporte}>
                                     <td style={{ padding: '10px', border: '1px solid #ddd' }}>{r.idReporte}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                                        {r.autor ? `${r.autor.nombre} ${r.autor.apellido || ''} (${r.autor.rol})` : 'Desconocido'}
-                                    </td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                                        {r.computadora ? r.computadora.nombre : 'Sin especificar'}
-                                    </td>
                                     <td style={{ padding: '10px', border: '1px solid #ddd' }}>{r.descripcion}</td>
+                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{new Date(r.fecha || r.createdAt).toLocaleString()}</td>
                                     <td style={{ padding: '10px', border: '1px solid #ddd' }}>
                                         <span style={{ 
                                             padding: '4px 8px', 
@@ -401,9 +394,9 @@ export default function AdminDashboard() {
                                             style={{ padding: '6px' }}
                                         >
                                             <option value="pendiente">Pendiente</option>
-                                            <option value="en revision">En revisión</option>
-                                            <option value="resuelto">Resuelto</option>
+                                            <option value="completado">Completado</option>
                                         </select>
+                                        <button onClick={() => handleDelete('reportes', r.idReporte)} style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', marginLeft: '8px' }}>Eliminar</button>
                                     </td>
                                 </tr>
                             ))}
@@ -468,7 +461,46 @@ export default function AdminDashboard() {
                                         <button onClick={() => handleDelete('inventario', item.idInventario)} style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}>Eliminar</button>
                                     </td>
                                 </tr>
-                         ))}
+                           ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            {/* BITÁCORA (USA LOS REPORTES DE INICIO DE SESIÓN Y ACTIVIDAD) */}
+            {activeTab === 'bitacora' && (
+                <div>
+                    <h3>Bitácora de Accesos y Actividad (Reportes del Sistema)</h3>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+                        <thead>
+                            <tr style={{ background: '#f1f1f1', textAlign: 'left' }}>
+                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>ID</th>
+                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Detalle de la Actividad</th>
+                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Fecha y Hora</th>
+                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {reportes.map(r => (
+                                <tr key={r.idReporte}>
+                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{r.idReporte}</td>
+                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{r.descripcion}</td>
+                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{new Date(r.fecha || r.createdAt).toLocaleString()}</td>
+                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
+                                        <span style={{ 
+                                            padding: '4px 8px', 
+                                            borderRadius: '4px', 
+                                            background: '#17a2b8',
+                                            color: '#fff',
+                                            fontWeight: 'bold',
+                                            fontSize: '12px',
+                                            textTransform: 'capitalize'
+                                        }}>
+                                            {r.estado}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
@@ -476,4 +508,3 @@ export default function AdminDashboard() {
         </div>
     );
 }
-
