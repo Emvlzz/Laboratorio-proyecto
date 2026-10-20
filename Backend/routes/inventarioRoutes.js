@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { Inventario } = require('../models');
-const registrarBitacora = require('../utils/logger');
 
 const auth = require('../middlewares/auth');
 const verificarToken = auth.verificarToken;
@@ -41,12 +40,7 @@ router.post('/', verificarToken, esAdmin, async (req, res) => {
             descripcion: descripcion || ''
         });
 
-        await registrarBitacora(
-            idAdmin,
-            'REGISTRO_INVENTARIO',
-            `Se registró en el inventario el artículo: "${nombreItem}" (Cantidad: ${cantidad})`
-        );
-
+       
         return res.status(201).json({ msg: 'Artículo registrado con éxito', item: nuevoItem });
     } catch (error) {
         console.error("Error al registrar en inventario:", error);
@@ -65,12 +59,6 @@ router.delete('/:id', verificarToken, esAdmin, async (req, res) => {
 
         const nombreGuardado = item.nombreItem;
         await item.destroy();
-
-        await registrarBitacora(
-            idAdmin,
-            'ELIMINAR_INVENTARIO',
-            `Se eliminó del inventario el artículo ID ${id} ("${nombreGuardado}")`
-        );
 
         return res.json({ msg: 'Artículo eliminado del inventario' });
     } catch (error) {

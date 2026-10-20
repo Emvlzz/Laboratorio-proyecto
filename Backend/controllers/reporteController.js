@@ -1,9 +1,15 @@
-const { Reporte } = require('../models');
+const { Reporte, Usuario, Computadora } = require('../models');
 
-// Obtener todos los reportes
+// Obtener todos los reportes con detalles de autor y computadora
 const obtenerReportes = async (req, res) => {
     try {
-        const reportes = await Reporte.findAll({ order: [['createdAt', 'DESC']] });
+        const reportes = await Reporte.findAll({
+            include: [
+                { model: Usuario, as: 'autor', attributes: ['nombre', 'apellido', 'rol', 'credenciales'] },
+                { model: Computadora, as: 'computadora', attributes: ['nombre'] }
+            ],
+            order: [['createdAt', 'DESC']]
+        });
         return res.json(reportes);
     } catch (error) {
         console.error("Error al obtener reportes:", error);
@@ -11,10 +17,11 @@ const obtenerReportes = async (req, res) => {
     }
 };
 
-// Crear un nuevo reporte
+// Crear un nuevo reporte de incidencia desde la app
 const crearReporte = async (req, res) => {
     try {
-        const { descripcion } = req.body;
+        const { descripcion, computadoraId } = req.body;
+        const idUsuario = req.user.id; // Obtenido del token verificado
 
         if (!descripcion) {
             return res.status(400).json({ msg: 'La descripción del reporte es obligatoria.' });
@@ -22,7 +29,9 @@ const crearReporte = async (req, res) => {
 
         const nuevoReporte = await Reporte.create({
             descripcion,
-            estado: 'pendiente'
+            estado: 'pendiente',
+            idUsuario,
+            computadoraId: computadoraId || null
         });
 
         return res.status(201).json({ msg: 'Reporte creado con éxito', reporte: nuevoReporte });
@@ -32,7 +41,7 @@ const crearReporte = async (req, res) => {
     }
 };
 
-// Actualizar estado de un reporte (ej. pendiente -> resuelto)
+// Actualizar el estado de un reporte
 const actualizarEstadoReporte = async (req, res) => {
     try {
         const { id } = req.params;

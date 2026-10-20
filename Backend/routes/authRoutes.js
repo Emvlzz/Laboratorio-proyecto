@@ -1,16 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const { Usuario, Reporte } = require('../models'); // 👈 Importamos el modelo Reporte
+const { Usuario, Auditoria } = require('../models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'mordekaiser';
 
+// Login
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Buscar el usuario por credenciales
+        // Buscar el usuario por sus credenciales
         const usuario = await Usuario.findOne({ where: { credenciales: email } });
         if (!usuario) {
             return res.status(404).json({ msg: 'Usuario no encontrado.' });
@@ -22,7 +23,7 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ msg: 'Contraseña incorrecta.' });
         }
 
-        // Generar el Token JWT
+        // Generar token JWT
         const token = jwt.sign(
             { 
                 id: usuario.idUsuario, 
@@ -34,11 +35,11 @@ router.post('/login', async (req, res) => {
             { expiresIn: '2h' }
         );
 
-        // --- CREAR EL REPORTE AUTOMÁTICO DE INICIO DE SESIÓN ---
-        const ahora = new Date();
-        await Reporte.create({
-            descripcion: `Inicio de sesión: El usuario ${usuario.nombre} (${usuario.credenciales}) con rol [${usuario.rol}] accedió al sistema el día ${ahora.toLocaleDateString()} a las ${ahora.toLocaleTimeString()}.`,
-            estado: 'completado' // O 'pendiente' / 'informativo' según prefieras
+        // --- REGISTRO AUTOMÁTICO EN LA BITÁCORA DE AUDITORÍA (LOGIN) ---
+        await Auditoria.create({
+            descripcion: `Inicio de sesión: El usuario ${usuario.nombre} con id: ${usuario.idUsuario} y (${usuario.credenciales}) con rol [${usuario.rol}] accedió al sistema.`,
+            idUsuario: usuario.idUsuario,
+            estado: 'exitoso'
         });
 
         return res.json({
@@ -49,6 +50,53 @@ router.post('/login', async (req, res) => {
         });
     } catch (error) {
         console.error("Error en /login:", error);
+        return res.status(500).json({ msg: 'Error interno en el servidor', error: error.message });
+    }
+});
+
+// Register
+router.post('/register', async (req, res) => {
+    try {
+        const { nombre, apellido, curso, credenciales, password, rol } = req.body;
+
+        // Validar si ya existe un usuario con esas credenciales
+        const usuarioExistente = await Usuario.findOne({ where: { credenciales } });
+        if (usuarioExistente) {
+            return res.status(400).json({ msg: 'Ya existe un usuario registrado con estas credenciales.' });
+        }
+
+        // Encriptar la contraseña
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Crear el nuevo usuario en la base de datos
+        const nuevoUsuario = await Usuario.create({
+            nombre,
+            apellido,
+            curso,
+            credenciales,
+            password: hashedPassword,
+            rol: rol || 'alumno' 
+        });
+
+        // --- REGISTRO AUTOMÁTICO EN LA BITÁCORA DE AUDITORÍA (REGISTRO) ---
+        await Auditoria.create({
+            descripcion: `Nuevo registro: Se creó la cuenta de usuario ${nuevoUsuario.nombre} (${nuevoUsuario.credenciales}) con rol [${nuevoUsuario.rol}].`,
+            idUsuario: nuevoUsuario.idUsuario,
+            estado: 'exitoso'
+        });
+
+        return res.status(201).json({
+            msg: '¡Usuario registrado con éxito!',
+            usuario: {
+                id: nuevoUsuario.idUsuario,
+                nombre: nuevoUsuario.nombre,
+                credenciales: nuevoUsuario.credenciales,
+                rol: nuevoUsuario.rol
+            }
+        });
+    } catch (error) {
+        console.error("Error en /register:", error);
         return res.status(500).json({ msg: 'Error interno en el servidor', error: error.message });
     }
 });

@@ -11,7 +11,8 @@ const aulaRoutes = require('./routes/aulaRoutes');
 const computadoraRoutes = require('./routes/computadoraRoutes');
 const carritoRoutes = require('./routes/carritoRoutes');
 const inventarioRoutes = require('./routes/inventarioRoutes');
-const reporteRoutes = require('./routes/reporteRoutes');
+const auditoriaRoutes = require('./routes/auditoriaRoutes.js');
+const ReporteRoutes = require('./routes/reporteRoutes.js');
 
 const server = express();
 server.use(express.json());
@@ -45,7 +46,8 @@ server.use('/aulas', miMiddleware.verificarToken, aulaRoutes);
 server.use('/computadoras', miMiddleware.verificarToken, computadoraRoutes);
 server.use('/carritos', miMiddleware.verificarToken, carritoRoutes);
 server.use('/inventario',miMiddleware.verificarToken, inventarioRoutes);
-server.use('/reportes',miMiddleware.verificarToken, reporteRoutes);
+server.use('/auditoria',miMiddleware.verificarToken, auditoriaRoutes);
+server.use('/reportes', miMiddleware.verificarToken, ReporteRoutes);
 
 const PORT = 3000;
 

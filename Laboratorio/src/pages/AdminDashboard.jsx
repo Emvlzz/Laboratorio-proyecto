@@ -9,6 +9,7 @@ export default function AdminDashboard() {
     const [carritos, setCarritos] = useState([]);
     const [reportes, setReportes] = useState([]);
     const [inventario, setInventario] = useState([]);
+    const [bitacora, setBitacora] = useState([]);
 
     // Formularios Computadoras
     const [compNombre, setCompNombre] = useState('');
@@ -42,12 +43,13 @@ export default function AdminDashboard() {
             setError('');
             const headers = getAuthHeaders();
 
-            const [resUsers, resComps, resCarritos, resReportes, resInventario] = await Promise.all([
+            const [resUsers, resComps, resCarritos, resReportes, resInventario, resBitacora] = await Promise.all([
                 api.get('/Usuarios', headers),
                 api.get('/computadoras', headers),
                 api.get('/carritos', headers),
                 api.get('/reportes', headers),
-                api.get('/inventario', headers)
+                api.get('/inventario', headers),
+                api.get('/auditoria', headers)
             ]);
 
             setUsuarios(resUsers.data);
@@ -55,6 +57,7 @@ export default function AdminDashboard() {
             setCarritos(resCarritos.data);
             setReportes(resReportes.data);
             setInventario(resInventario.data);
+            setBitacora(resBitacora.data);
 
         } catch (err) {
             setError(err.response?.data?.msg || 'Error al cargar los datos');
@@ -198,7 +201,7 @@ export default function AdminDashboard() {
                 <button onClick={() => setActiveTab('carritos')} style={{ padding: '10px 20px', background: activeTab === 'carritos' ? '#007bff' : '#f8f9fa', color: activeTab === 'carritos' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Carritos</button>
                 <button onClick={() => setActiveTab('reportes')} style={{ padding: '10px 20px', background: activeTab === 'reportes' ? '#007bff' : '#f8f9fa', color: activeTab === 'reportes' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Reportes</button>
                 <button onClick={() => setActiveTab('inventario')} style={{ padding: '10px 20px', background: activeTab === 'inventario' ? '#007bff' : '#f8f9fa', color: activeTab === 'inventario' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Inventario</button>
-                <button onClick={() => setActiveTab('bitacora')} style={{ padding: '10px 20px', background: activeTab === 'bitacora' ? '#007bff' : '#f8f9fa', color: activeTab === 'bitacora' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Bitácora (Reportes)</button>
+                <button onClick={() => setActiveTab('bitacora')} style={{ padding: '10px 20px', background: activeTab === 'bitacora' ? '#007bff' : '#f8f9fa', color: activeTab === 'bitacora' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Bitácora</button>
             </div>
 
             {/* TABLA USUARIOS */}
@@ -467,37 +470,27 @@ export default function AdminDashboard() {
                 </div>
             )}
 
-            {/* BITÁCORA (USA LOS REPORTES DE INICIO DE SESIÓN Y ACTIVIDAD) */}
+            {/* BITÁCORA */}
             {activeTab === 'bitacora' && (
                 <div>
-                    <h3>Bitácora de Accesos y Actividad (Reportes del Sistema)</h3>
+                    <h3>Bitácora de Accesos y Actividad del Sistema</h3>
                     <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
                         <thead>
                             <tr style={{ background: '#f1f1f1', textAlign: 'left' }}>
                                 <th style={{ padding: '10px', border: '1px solid #ddd' }}>ID</th>
                                 <th style={{ padding: '10px', border: '1px solid #ddd' }}>Detalle de la Actividad</th>
                                 <th style={{ padding: '10px', border: '1px solid #ddd' }}>Fecha y Hora</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Estado</th>
+                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {reportes.map(r => (
-                                <tr key={r.idReporte}>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{r.idReporte}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{r.descripcion}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{new Date(r.fecha || r.createdAt).toLocaleString()}</td>
+                            {bitacora.map(b => (
+                                <tr key={b.idAuditoria}>
+                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{b.idAuditoria}</td>
+                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{b.descripcion}</td>
+                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{new Date(b.fecha || b.createdAt).toLocaleString()}</td>
                                     <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                                        <span style={{ 
-                                            padding: '4px 8px', 
-                                            borderRadius: '4px', 
-                                            background: '#17a2b8',
-                                            color: '#fff',
-                                            fontWeight: 'bold',
-                                            fontSize: '12px',
-                                            textTransform: 'capitalize'
-                                        }}>
-                                            {r.estado}
-                                        </span>
+                                        <button onClick={() => handleDelete('auditoria', b.idAuditoria)} style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}>Eliminar</button>
                                     </td>
                                 </tr>
                             ))}
