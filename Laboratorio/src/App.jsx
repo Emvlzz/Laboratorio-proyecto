@@ -4,7 +4,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Home from './pages/Home';
 import AdminDashboard from './pages/AdminDashboard';
-
+import Perfil from './pages/Perfil';
 // Componente para proteger vistas privadas
 const PrivateRoute = ({ children }) => {
     const token = localStorage.getItem('token');
@@ -18,6 +18,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
+            <Route path="/perfil" element={<PrivateRoute><Perfil /></PrivateRoute>} />
         </Routes>
     );
 }

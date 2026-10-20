@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useNavigate, Link } from 'react-router-dom';
+import './AdminDashboard.css';
 
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('usuarios');
@@ -170,73 +171,61 @@ export default function AdminDashboard() {
     };
 
     return (
-        <div style={{ padding: '30px', fontFamily: 'sans-serif', maxWidth: '1200px', margin: '0 auto' }}>
-            <div style={{ marginBottom: '20px' }}>
-                <Link
-                    to="/"
-                    style={{
-                        display: 'inline-block',
-                        padding: '8px 16px',
-                        background: '#6c757d',
-                        color: '#fff',
-                        textDecoration: 'none',
-                        borderRadius: '4px',
-                        fontWeight: 'bold',
-                        fontSize: '14px'
-                    }}
-                >
+        <div className="dashboard-container">
+            <div className="dashboard-back-wrapper">
+                <Link to="/" className="dashboard-back-link">
                     ← Volver al Inicio
                 </Link>
             </div>
 
-            <h2>Panel de Administración - Laboratorio</h2>
+            <h2 className="dashboard-title">Panel de Administración - Laboratorio</h2>
 
-            {msg && <p style={{ color: 'green', fontWeight: 'bold' }}>{msg}</p>}
-            {error && <p style={{ color: 'red', fontWeight: 'bold' }}>{error}</p>}
+            {msg && <p className="msg-success">{msg}</p>}
+            {error && <p className="msg-error">{error}</p>}
 
             {/* Pestañas de Navegación */}
-            <div style={{ marginBottom: '20px', display: 'flex', gap: '10px', borderBottom: '2px solid #ddd', paddingBottom: '10px', flexWrap: 'wrap' }}>
-                <button onClick={() => setActiveTab('usuarios')} style={{ padding: '10px 20px', background: activeTab === 'usuarios' ? '#007bff' : '#f8f9fa', color: activeTab === 'usuarios' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Usuarios</button>
-                <button onClick={() => setActiveTab('computadoras')} style={{ padding: '10px 20px', background: activeTab === 'computadoras' ? '#007bff' : '#f8f9fa', color: activeTab === 'computadoras' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Computadoras</button>
-                <button onClick={() => setActiveTab('carritos')} style={{ padding: '10px 20px', background: activeTab === 'carritos' ? '#007bff' : '#f8f9fa', color: activeTab === 'carritos' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Carritos</button>
-                <button onClick={() => setActiveTab('reportes')} style={{ padding: '10px 20px', background: activeTab === 'reportes' ? '#007bff' : '#f8f9fa', color: activeTab === 'reportes' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Reportes</button>
-                <button onClick={() => setActiveTab('inventario')} style={{ padding: '10px 20px', background: activeTab === 'inventario' ? '#007bff' : '#f8f9fa', color: activeTab === 'inventario' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Inventario</button>
-                <button onClick={() => setActiveTab('bitacora')} style={{ padding: '10px 20px', background: activeTab === 'bitacora' ? '#007bff' : '#f8f9fa', color: activeTab === 'bitacora' ? '#fff' : '#333', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Bitácora</button>
+            <div className="dashboard-tabs">
+                <button onClick={() => setActiveTab('usuarios')} className={`tab-btn ${activeTab === 'usuarios' ? 'active' : 'inactive'}`}>Usuarios</button>
+                <button onClick={() => setActiveTab('computadoras')} className={`tab-btn ${activeTab === 'computadoras' ? 'active' : 'inactive'}`}>Computadoras</button>
+                <button onClick={() => setActiveTab('carritos')} className={`tab-btn ${activeTab === 'carritos' ? 'active' : 'inactive'}`}>Carritos</button>
+                <button onClick={() => setActiveTab('reportes')} className={`tab-btn ${activeTab === 'reportes' ? 'active' : 'inactive'}`}>Reportes</button>
+                <button onClick={() => setActiveTab('inventario')} className={`tab-btn ${activeTab === 'inventario' ? 'active' : 'inactive'}`}>Inventario</button>
+                <button onClick={() => setActiveTab('bitacora')} className={`tab-btn ${activeTab === 'bitacora' ? 'active' : 'inactive'}`}>Bitácora</button>
             </div>
 
             {/* TABLA USUARIOS */}
             {activeTab === 'usuarios' && (
                 <div>
                     <h3>Gestión de Usuarios (Alumnos, Profesores y Administradores)</h3>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+                    <table className="dashboard-table">
                         <thead>
-                            <tr style={{ background: '#f1f1f1', textAlign: 'left' }}>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Nombre</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Apellido</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Curso / Aula</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Credencial</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Rol</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Computadora Asignada</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Acciones</th>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Curso / Aula</th>
+                                <th>Credencial</th>
+                                <th>Rol</th>
+                                <th>Computadora Asignada</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             {usuarios.map(u => (
                                 <tr key={u.idUsuario}>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{u.nombre}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{u.apellido || '-'}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{u.curso || '-'}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{u.credenciales}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                                        <span style={{ padding: '3px 8px', borderRadius: '4px', background: u.rol === 'administrador' ? '#ffc107' : '#e2e3e5', fontSize: '12px', textTransform: 'capitalize' }}>
+                                    <td>{u.nombre}</td>
+                                    <td>{u.apellido || '-'}</td>
+                                    <td>{u.curso || '-'}</td>
+                                    <td>{u.credenciales}</td>
+                                    <td>
+                                        <span className={u.rol === 'administrador' ? 'badge-admin' : 'badge-user'}>
                                             {u.rol}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
+                                    <td>
                                         <select
                                             defaultValue={u.computadoraId || ""}
                                             onChange={(e) => handleAsignarComputadora(u.idUsuario, e.target.value)}
-                                            style={{ padding: '6px', width: '100%' }}
+                                            className="form-control"
                                         >
                                             <option value="">-- Sin asignar --</option>
                                             {computadoras.map(c => (
@@ -246,8 +235,8 @@ export default function AdminDashboard() {
                                             ))}
                                         </select>
                                     </td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                                        <button onClick={() => handleDelete('Usuarios', u.idUsuario)} style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}>Eliminar</button>
+                                    <td>
+                                        <button onClick={() => handleDelete('Usuarios', u.idUsuario)} className="btn-danger-custom">Eliminar</button>
                                     </td>
                                 </tr>
                             ))}
@@ -260,19 +249,19 @@ export default function AdminDashboard() {
             {activeTab === 'computadoras' && (
                 <div>
                     <h3>Gestión de Computadoras</h3>
-                    <form onSubmit={handleCreateComputadora} style={{ background: '#f9f9f9', padding: '15px', borderRadius: '6px', marginBottom: '20px', border: '1px solid #e1e1e1' }}>
+                    <form onSubmit={handleCreateComputadora} className="dashboard-form">
                         <h4>Añadir Nueva Computadora</h4>
-                        <div style={{ marginBottom: '10px' }}>
+                        <div className="form-group">
                             <label>Nombre / Identificador:</label><br />
-                            <input type="text" value={compNombre} onChange={(e) => setCompNombre(e.target.value)} required style={{ width: '100%', padding: '6px', boxSizing: 'border-box' }} />
+                            <input type="text" value={compNombre} onChange={(e) => setCompNombre(e.target.value)} required className="form-control" />
                         </div>
-                        <div style={{ marginBottom: '10px' }}>
+                        <div className="form-group">
                             <label>Descripción:</label><br />
-                            <input type="text" value={compDesc} onChange={(e) => setCompDesc(e.target.value)} style={{ width: '100%', padding: '6px', boxSizing: 'border-box' }} />
+                            <input type="text" value={compDesc} onChange={(e) => setCompDesc(e.target.value)} className="form-control" />
                         </div>
-                        <div style={{ marginBottom: '10px' }}>
+                        <div className="form-group">
                             <label>Asignar a Carrito:</label><br />
-                            <select value={selectedCarritoId} onChange={(e) => setSelectedCarritoId(e.target.value)} style={{ width: '100%', padding: '6px' }}>
+                            <select value={selectedCarritoId} onChange={(e) => setSelectedCarritoId(e.target.value)} className="form-control">
                                 <option value="">-- Sin Carrito Asignado --</option>
                                 {carritos.map(car => (
                                     <option key={car.idCarrito} value={car.idCarrito}>
@@ -281,28 +270,28 @@ export default function AdminDashboard() {
                                 ))}
                             </select>
                         </div>
-                        <button type="submit" style={{ background: '#28a745', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer' }}>Guardar Computadora</button>
+                        <button type="submit" className="btn-success-custom">Guardar Computadora</button>
                     </form>
 
-                    <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+                    <table className="dashboard-table">
                         <thead>
-                            <tr style={{ background: '#f1f1f1', textAlign: 'left' }}>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>ID</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Nombre</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Carrito Asignado</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Acciones</th>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Carrito Asignado</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             {computadoras.map(c => (
                                 <tr key={c.idComputadora}>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{c.idComputadora}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{c.nombre}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
+                                    <td>{c.idComputadora}</td>
+                                    <td>{c.nombre}</td>
+                                    <td>
                                         {c.carrito ? `${c.carrito.nombre} (Curso: ${c.carrito.curso})` : 'Sin asignar'}
                                     </td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                                        <button onClick={() => handleDelete('computadoras', c.idComputadora)} style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}>Eliminar</button>
+                                    <td>
+                                        <button onClick={() => handleDelete('computadoras', c.idComputadora)} className="btn-danger-custom">Eliminar</button>
                                     </td>
                                 </tr>
                             ))}
@@ -315,40 +304,40 @@ export default function AdminDashboard() {
             {activeTab === 'carritos' && (
                 <div>
                     <h3>Gestión de Carritos</h3>
-                    <form onSubmit={handleCreateCarrito} style={{ background: '#f9f9f9', padding: '15px', borderRadius: '6px', marginBottom: '20px', border: '1px solid #e1e1e1' }}>
+                    <form onSubmit={handleCreateCarrito} className="dashboard-form">
                         <h4>Añadir Nuevo Carrito</h4>
-                        <div style={{ marginBottom: '10px' }}>
+                        <div className="form-group">
                             <label>Nombre del Carrito:</label><br />
-                            <input type="text" value={carritoNombre} onChange={(e) => setCarritoNombre(e.target.value)} required style={{ width: '100%', padding: '6px', boxSizing: 'border-box' }} />
+                            <input type="text" value={carritoNombre} onChange={(e) => setCarritoNombre(e.target.value)} required className="form-control" />
                         </div>
-                        <div style={{ marginBottom: '10px' }}>
+                        <div className="form-group">
                             <label>Curso / Aula Asignada:</label><br />
-                            <input type="text" value={carritoCurso} onChange={(e) => setCarritoCurso(e.target.value)} required placeholder="Ej: 3° Año Informática" style={{ width: '100%', padding: '6px', boxSizing: 'border-box' }} />
+                            <input type="text" value={carritoCurso} onChange={(e) => setCarritoCurso(e.target.value)} required placeholder="Ej: 3° Año Informática" className="form-control" />
                         </div>
-                        <div style={{ marginBottom: '10px' }}>
+                        <div className="form-group">
                             <label>Descripción:</label><br />
-                            <input type="text" value={carritoDesc} onChange={(e) => setCarritoDesc(e.target.value)} style={{ width: '100%', padding: '6px', boxSizing: 'border-box' }} />
+                            <input type="text" value={carritoDesc} onChange={(e) => setCarritoDesc(e.target.value)} className="form-control" />
                         </div>
-                        <button type="submit" style={{ background: '#28a745', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer' }}>Guardar Carrito</button>
+                        <button type="submit" className="btn-success-custom">Guardar Carrito</button>
                     </form>
 
-                    <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+                    <table className="dashboard-table">
                         <thead>
-                            <tr style={{ background: '#f1f1f1', textAlign: 'left' }}>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>ID</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Nombre</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Curso / Aula</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Acciones</th>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Curso / Aula</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             {carritos.map(car => (
                                 <tr key={car.idCarrito}>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{car.idCarrito}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{car.nombre}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{car.curso}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                                        <button onClick={() => handleDelete('carritos', car.idCarrito)} style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}>Eliminar</button>
+                                    <td>{car.idCarrito}</td>
+                                    <td>{car.nombre}</td>
+                                    <td>{car.curso}</td>
+                                    <td>
+                                        <button onClick={() => handleDelete('carritos', car.idCarrito)} className="btn-danger-custom">Eliminar</button>
                                     </td>
                                 </tr>
                             ))}
@@ -361,36 +350,28 @@ export default function AdminDashboard() {
             {activeTab === 'reportes' && (
                 <div>
                     <h3>Registro de Reportes del Sistema</h3>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+                    <table className="dashboard-table">
                         <thead>
-                            <tr style={{ background: '#f1f1f1', textAlign: 'left' }}>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>ID</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Descripción</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Fecha / Hora</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Estado</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Acciones</th>
+                            <tr>
+                                <th>ID</th>
+                                <th>Descripción</th>
+                                <th>Fecha / Hora</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             {reportes.map(r => (
                                 <tr key={r.idReporte}>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{r.idReporte}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{r.descripcion}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{new Date(r.fecha || r.createdAt).toLocaleString()}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                                        <span style={{ 
-                                            padding: '4px 8px', 
-                                            borderRadius: '4px', 
-                                            background: r.estado === 'pendiente' ? '#ffc107' : '#28a745',
-                                            color: r.estado === 'pendiente' ? '#000' : '#fff',
-                                            fontWeight: 'bold',
-                                            fontSize: '12px',
-                                            textTransform: 'capitalize'
-                                        }}>
+                                    <td>{r.idReporte}</td>
+                                    <td>{r.descripcion}</td>
+                                    <td>{new Date(r.fecha || r.createdAt).toLocaleString()}</td>
+                                    <td>
+                                        <span className={r.estado === 'pendiente' ? 'badge-reporte-pendiente' : 'badge-reporte-completado'}>
                                             {r.estado}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
+                                    <td>
                                         <select 
                                             value={r.estado}
                                             onChange={(e) => handleCambiarEstadoReporte(r.idReporte, e.target.value)}
@@ -399,7 +380,7 @@ export default function AdminDashboard() {
                                             <option value="pendiente">Pendiente</option>
                                             <option value="completado">Completado</option>
                                         </select>
-                                        <button onClick={() => handleDelete('reportes', r.idReporte)} style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', marginLeft: '8px' }}>Eliminar</button>
+                                        <button onClick={() => handleDelete('reportes', r.idReporte)} className="btn-danger-custom" style={{ marginLeft: '8px' }}>Eliminar</button>
                                     </td>
                                 </tr>
                             ))}
@@ -412,56 +393,56 @@ export default function AdminDashboard() {
             {activeTab === 'inventario' && (
                 <div>
                     <h3>Gestión de Inventario del Laboratorio</h3>
-                    <form onSubmit={handleCreateInventario} style={{ background: '#f9f9f9', padding: '15px', borderRadius: '6px', marginBottom: '20px', border: '1px solid #e1e1e1' }}>
+                    <form onSubmit={handleCreateInventario} className="dashboard-form">
                         <h4>Registrar Nuevo Artículo / Insumo</h4>
-                        <div style={{ marginBottom: '10px' }}>
+                        <div className="form-group">
                             <label>Nombre del Artículo / Componente:</label><br />
-                            <input type="text" value={invNombre} onChange={(e) => setInvNombre(e.target.value)} required style={{ width: '100%', padding: '6px', boxSizing: 'border-box' }} />
+                            <input type="text" value={invNombre} onChange={(e) => setInvNombre(e.target.value)} required className="form-control" />
                         </div>
-                        <div style={{ marginBottom: '10px', display: 'flex', gap: '10px' }}>
+                        <div className="form-row">
                             <div style={{ flex: 1 }}>
                                 <label>Categoría:</label><br />
-                                <input type="text" placeholder="Ej: Periféricos, Cables, Herramientas" value={invCategoria} onChange={(e) => setInvCategoria(e.target.value)} style={{ width: '100%', padding: '6px', boxSizing: 'border-box' }} />
+                                <input type="text" placeholder="Ej: Periféricos, Cables, Herramientas" value={invCategoria} onChange={(e) => setInvCategoria(e.target.value)} className="form-control" />
                             </div>
                             <div style={{ width: '120px' }}>
                                 <label>Cantidad:</label><br />
-                                <input type="number" min="1" value={invCantidad} onChange={(e) => setInvCantidad(e.target.value)} required style={{ width: '100%', padding: '6px', boxSizing: 'border-box' }} />
+                                <input type="number" min="1" value={invCantidad} onChange={(e) => setInvCantidad(e.target.value)} required className="form-control" />
                             </div>
                         </div>
-                        <div style={{ marginBottom: '10px' }}>
+                        <div className="form-group">
                             <label>Ubicación / Depósito:</label><br />
-                            <input type="text" placeholder="Ej: Armario B, Estante 3" value={invUbicacion} onChange={(e) => setInvUbicacion(e.target.value)} style={{ width: '100%', padding: '6px', boxSizing: 'border-box' }} />
+                            <input type="text" placeholder="Ej: Armario B, Estante 3" value={invUbicacion} onChange={(e) => setInvUbicacion(e.target.value)} className="form-control" />
                         </div>
-                        <div style={{ marginBottom: '10px' }}>
+                        <div className="form-group">
                             <label>Descripción / Observaciones:</label><br />
-                            <input type="text" value={invDesc} onChange={(e) => setInvDesc(e.target.value)} style={{ width: '100%', padding: '6px', boxSizing: 'border-box' }} />
+                            <input type="text" value={invDesc} onChange={(e) => setInvDesc(e.target.value)} className="form-control" />
                         </div>
-                        <button type="submit" style={{ background: '#28a745', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer' }}>Guardar en Inventario</button>
+                        <button type="submit" className="btn-success-custom">Guardar en Inventario</button>
                     </form>
 
-                    <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+                    <table className="dashboard-table">
                         <thead>
-                            <tr style={{ background: '#f1f1f1', textAlign: 'left' }}>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>ID</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Artículo</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Categoría</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Stock / Cantidad</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Ubicación</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Descripción</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Acciones</th>
+                            <tr>
+                                <th>ID</th>
+                                <th>Artículo</th>
+                                <th>Categoría</th>
+                                <th>Stock / Cantidad</th>
+                                <th>Ubicación</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             {inventario.map(item => (
                                 <tr key={item.idInventario}>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{item.idInventario}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd', fontWeight: 'bold' }}>{item.nombreItem}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{item.categoria}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{item.cantidad}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{item.ubicacion}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{item.descripcion || '-'}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                                        <button onClick={() => handleDelete('inventario', item.idInventario)} style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}>Eliminar</button>
+                                    <td>{item.idInventario}</td>
+                                    <td style={{ fontWeight: 'bold' }}>{item.nombreItem}</td>
+                                    <td>{item.categoria}</td>
+                                    <td>{item.cantidad}</td>
+                                    <td>{item.ubicacion}</td>
+                                    <td>{item.descripcion || '-'}</td>
+                                    <td>
+                                        <button onClick={() => handleDelete('inventario', item.idInventario)} className="btn-danger-custom">Eliminar</button>
                                     </td>
                                 </tr>
                            ))}
@@ -474,23 +455,23 @@ export default function AdminDashboard() {
             {activeTab === 'bitacora' && (
                 <div>
                     <h3>Bitácora de Accesos y Actividad del Sistema</h3>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+                    <table className="dashboard-table">
                         <thead>
-                            <tr style={{ background: '#f1f1f1', textAlign: 'left' }}>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>ID</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Detalle de la Actividad</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Fecha y Hora</th>
-                                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Acciones</th>
+                            <tr>
+                                <th>ID</th>
+                                <th>Detalle de la Actividad</th>
+                                <th>Fecha y Hora</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             {bitacora.map(b => (
                                 <tr key={b.idAuditoria}>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{b.idAuditoria}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{b.descripcion}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{new Date(b.fecha || b.createdAt).toLocaleString()}</td>
-                                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                                        <button onClick={() => handleDelete('auditoria', b.idAuditoria)} style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}>Eliminar</button>
+                                    <td>{b.idAuditoria}</td>
+                                    <td>{b.descripcion}</td>
+                                    <td>{new Date(b.fecha || b.createdAt).toLocaleString()}</td>
+                                    <td>
+                                        <button onClick={() => handleDelete('auditoria', b.idAuditoria)} className="btn-danger-custom">Eliminar</button>
                                     </td>
                                 </tr>
                             ))}

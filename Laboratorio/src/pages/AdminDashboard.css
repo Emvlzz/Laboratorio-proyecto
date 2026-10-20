@@ -1,0 +1,163 @@
+.dashboard-container {
+    padding: 30px;
+    font-family: sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.dashboard-back-wrapper {
+    margin-bottom: 20px;
+}
+
+.dashboard-back-link {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #6c757d;
+    color: #fff;
+    text-decoration: none;
+    borderRadius: 4px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.dashboard-title {
+    margin-bottom: 20px;
+}
+
+.msg-success {
+    color: green;
+    font-weight: bold;
+}
+
+.msg-error {
+    color: red;
+    font-weight: bold;
+}
+
+/* Pestañas de Navegación */
+.dashboard-tabs {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.tab-btn.active {
+    background: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+.tab-btn.inactive {
+    background: #f8f9fa;
+    color: #333;
+}
+
+/* Formularios y Tarjetas */
+.dashboard-form {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #e1e1e1;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-row {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 6px;
+    box-sizing: border-box;
+}
+
+/* Tablas */
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.dashboard-table th {
+    padding: 10px;
+    border: 1px solid #ddd;
+    background: #f1f1f1;
+    text-align: left;
+}
+
+.dashboard-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* Badges y Botones de Acción */
+.badge-admin {
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: #ffc107;
+    font-size: 12px;
+    text-transform: capitalize;
+}
+
+.badge-user {
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: #e2e3e5;
+    font-size: 12px;
+    text-transform: capitalize;
+}
+
+.badge-reporte-pendiente {
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: #ffc107;
+    color: #000;
+    font-weight: bold;
+    font-size: 12px;
+    text-transform: capitalize;
+}
+
+.badge-reporte-completado {
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: #28a745;
+    color: #fff;
+    font-weight: bold;
+    font-size: 12px;
+    text-transform: capitalize;
+}
+
+.btn-success-custom {
+    background: #28a745;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-danger-custom {
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}

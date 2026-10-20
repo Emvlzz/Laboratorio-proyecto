@@ -51,6 +51,11 @@ export default function Home() {
                 <div className="home-actions">
                     {token ? (
                         <>
+                            {/* Botón para editar perfil (Disponible para cualquier usuario logueado) */}
+                            <Link to="/perfil" className="btn" style={{ background: '#17a2b8', color: '#fff', textDecoration: 'none', display: 'inline-block', textAlign: 'center' }}>
+                                 Editar Perfil
+                            </Link>
+
                             {isAdmin && (
                                 <Link to="/admin" className="btn btn-admin">
                                     Panel de Administración
