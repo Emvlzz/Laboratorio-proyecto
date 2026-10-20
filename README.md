@@ -9,7 +9,7 @@
 * Modelos y relaciones de Sequelize: `Usuario`, `Computadora`, `Carrito`, `Inventario`, `Reporte` y `Auditoria`.
 * Rutas y controladores CRUD para Usuarios, Computadoras, Carritos, Inventario, Reportes y Auditoria.
 * Ruta para asignacion directa de computadoras a usuarios (`PUT /Usuarios/:id/computadora`).
-
+* bitacora
 ### Frontend
 * Enrutamiento con React Router (`/`, `/login`, `/register`, `/admin`).
 * Inicio (`Home.jsx`): Muestra nombre y rol del usuario logueado. Oculta el boton de Administracion a usuarios no administradores.
@@ -23,5 +23,4 @@
 
 ### Frontend
 * Filtros de busqueda por curso y rol en las tablas de administracion.
-* Escribir reportes
-* Bitacoras
+* Escribir reportes de funcionamiento
