@@ -32,13 +32,13 @@ export default function Home() {
             <div className="home-card">
                 <h1 className="home-title">Gestión de Laboratorio</h1>
 
-                {/* Tarjeta de bienvenida con el nombre y rol del usuario actual */}
+                {/* Tarjeta de bienvenida con nombre y rol del usuario actual */}
                 {token && user && (
-                    <div style={{ marginBottom: '20px', padding: '12px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #e9ecef', textAlign: 'left' }}>
-                        <p style={{ margin: '0 0 4px 0', fontSize: '15px', color: '#2c3e50', fontWeight: 'bold' }}>
+                    <div className="user-welcome-box">
+                        <p className="user-welcome-title">
                             👋 Hola, {user.nombre}
                         </p>
-                        <p style={{ margin: 0, fontSize: '13px', color: '#7f8c8d', textTransform: 'capitalize' }}>
+                        <p className="user-welcome-role">
                             Rol: <strong>{user.rol}</strong>
                         </p>
                     </div>
@@ -52,8 +52,8 @@ export default function Home() {
                     {token ? (
                         <>
                             {/* Botón para editar perfil (Disponible para cualquier usuario logueado) */}
-                            <Link to="/perfil" className="btn" style={{ background: '#17a2b8', color: '#fff', textDecoration: 'none', display: 'inline-block', textAlign: 'center' }}>
-                                 Editar Perfil
+                            <Link to="/perfil" className="btn btn-profile">
+                                Editar Perfil
                             </Link>
 
                             {isAdmin && (

@@ -4,7 +4,7 @@ const { Usuario, Computadora, Carrito, Auditoria } = require('../models');
 const { verificarToken } = require('../middlewares/auth');
 const bcrypt = require('bcrypt');
 
-// ==================== RUTAS DE PERFIL (USUARIO AUTENTICADO) ====================
+
 // IMPORTANTE: Deben ir antes de las rutas con parámetros (:id)
 
 // GET: Obtener el perfil del usuario logueado

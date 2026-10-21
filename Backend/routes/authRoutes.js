@@ -59,17 +59,17 @@ router.post('/register', async (req, res) => {
     try {
         const { nombre, apellido, curso, credenciales, password, rol } = req.body;
 
-        // Validar si ya existe un usuario con esas credenciales
+        // Validar
         const usuarioExistente = await Usuario.findOne({ where: { credenciales } });
         if (usuarioExistente) {
             return res.status(400).json({ msg: 'Ya existe un usuario registrado con estas credenciales.' });
         }
 
-        // Encriptar la contraseña
+        // Encript
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Crear el nuevo usuario en la base de datos
+        // Crear
         const nuevoUsuario = await Usuario.create({
             nombre,
             apellido,

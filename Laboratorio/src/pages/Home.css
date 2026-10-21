@@ -31,6 +31,30 @@
     line-height: 1.5;
 }
 
+/* Tarjeta de bienvenida del usuario */
+.user-welcome-box {
+    margin-bottom: 20px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    text-align: left;
+}
+
+.user-welcome-title {
+    margin: 0 0 4px 0;
+    font-size: 15px;
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+.user-welcome-role {
+    margin: 0;
+    font-size: 13px;
+    color: #7f8c8d;
+    text-transform: capitalize;
+}
+
 .home-actions {
     display: flex;
     flex-direction: column;
@@ -46,11 +70,18 @@
     cursor: pointer;
     border: none;
     transition: all 0.2s ease-in-out;
+    display: inline-block;
+    text-align: center;
 }
 
 .btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-profile {
+    background-color: #17a2b8;
+    color: #fff;
 }
 
 .btn-primary {

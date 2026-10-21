@@ -9,7 +9,6 @@ export default function Perfil() {
     const [curso, setCurso] = useState('');
     const [credenciales, setCredenciales] = useState('');
     const [password, setPassword] = useState('');
-    
     const [msg, setMsg] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -61,7 +60,7 @@ export default function Perfil() {
 
             await api.put('/Usuarios/perfil', bodyData, getAuthHeaders());
             setMsg('¡Perfil actualizado con éxito!');
-            setPassword(''); // Limpiar campo de contraseña por seguridad
+            setPassword('');
         } catch (err) {
             setError(err.response?.data?.msg || 'Error al actualizar el perfil');
         }
