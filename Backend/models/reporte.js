@@ -15,6 +15,22 @@ const Reporte = sequelize.define('Reporte', {
     estado: { 
         type: DataTypes.STRING, 
         defaultValue: 'pendiente' 
+    },
+
+    idUsuario: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+
+    computadoraId: {
+        type: DataTypes.INTEGER,
+        allowNull: true, 
+        references: {
+            model: 'computadoras',
+            key: 'idComputadora'
+        },
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE'
     }
 }, { 
     tableName: 'reportes', 

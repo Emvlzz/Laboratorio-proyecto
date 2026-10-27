@@ -2,6 +2,10 @@ const { DataTypes } = require('sequelize');
 const  sequelize  = require('../config/db');
 
 const Usuario = sequelize.define('Usuario', {
+            fotoPerfil: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     idUsuario: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -32,13 +36,14 @@ const Usuario = sequelize.define('Usuario', {
         type: DataTypes.STRING,
         defaultValue: 'alumno'
     },
-    computadoraId: { // <--- NUEVO: Clave foránea para la computadora asignada
+    computadoraId: { 
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
             model: 'computadoras',
             key: 'idComputadora'
-        }
+        },
+
     }
 }, {
     tableName: 'usuarios',

@@ -1,15 +1,24 @@
 const { Reporte, Usuario, Computadora } = require('../models');
 
-// Obtener todos los reportes con detalles de autor y computadora
+// Obtener reportes filtrados por rol
 const obtenerReportes = async (req, res) => {
     try {
-        const reportes = await Reporte.findAll({
+        const usuarioLogueado = req.user; // Obtenido del token verificado
+
+        let opcionesConsulta = {
             include: [
                 { model: Usuario, as: 'autor', attributes: ['nombre', 'apellido', 'rol', 'credenciales'] },
                 { model: Computadora, as: 'computadora', attributes: ['nombre'] }
             ],
             order: [['createdAt', 'DESC']]
-        });
+        };
+
+        // Si el usuario NO es administrador (es alumno o profesor), filtramos sus reportes
+        if (usuarioLogueado.rol !== 'administrador') {
+            opcionesConsulta.where = { idUsuario: usuarioLogueado.id };
+        }
+
+        const reportes = await Reporte.findAll(opcionesConsulta);
         return res.json(reportes);
     } catch (error) {
         console.error("Error al obtener reportes:", error);
@@ -33,6 +42,18 @@ const crearReporte = async (req, res) => {
             idUsuario,
             computadoraId: computadoraId || null
         });
+
+        // Emitir evento en tiempo real para el panel del admin
+        const io = req.app.get('socketio');
+        if (io) {
+            const reporteConDetalles = await Reporte.findByPk(nuevoReporte.id, {
+                include: [
+                    { model: Usuario, as: 'autor', attributes: ['nombre', 'apellido', 'rol', 'credenciales'] },
+                    { model: Computadora, as: 'computadora', attributes: ['nombre'] }
+                ]
+            });
+            io.emit('nuevoReporte', reporteConDetalles);
+        }
 
         return res.status(201).json({ msg: 'Reporte creado con éxito', reporte: nuevoReporte });
     } catch (error) {

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../services/api';
 import './Perfil.css';
 
 export default function Perfil() {
@@ -9,60 +8,115 @@ export default function Perfil() {
     const [curso, setCurso] = useState('');
     const [credenciales, setCredenciales] = useState('');
     const [password, setPassword] = useState('');
+    const [foto, setFoto] = useState(null); 
+    const [fotoActual, setFotoActual] = useState(''); 
+    
     const [msg, setMsg] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const getAuthHeaders = () => {
-        const token = localStorage.getItem('token');
-        return { headers: { Authorization: `Bearer ${token}` } };
-    };
+    const token = localStorage.getItem('token');
 
-    // Cargar los datos actualizados del perfil desde la ruta correcta del backend
+    // Cargar los datos del perfil al montar el componente
     useEffect(() => {
         const fetchPerfil = async () => {
+            if (!token) {
+                console.warn("No hay token, redirigiendo a login...");
+                navigate('/login');
+                return;
+            }
+
             try {
-                const response = await api.get('/Usuarios/perfil', getAuthHeaders());
-                const data = response.data;
-                setNombre(data.nombre || '');
-                setApellido(data.apellido || '');
-                setCurso(data.curso || '');
-                setCredenciales(data.credenciales || '');
-            } catch (err) {
-                setError(err.response?.data?.msg || 'Error al cargar los datos del perfil');
-                if (err.response?.status === 401 || err.response?.status === 403) {
-                    navigate('/login');
+                console.log("Cargando perfil desde el servidor...");
+                const response = await fetch('http://localhost:3000/Usuarios/perfil', {
+                    headers: { 
+                        'Authorization': `Bearer ${token}` 
+                    }
+                });
+                
+                const data = await response.json();
+                console.log("Datos recibidos del perfil:", data);
+
+                if (response.ok) {
+                    setNombre(data.nombre || '');
+                    setApellido(data.apellido || '');
+                    setCurso(data.curso || '');
+                    setCredenciales(data.credenciales || '');
+                    
+                    if (data.fotoPerfil) {
+                        const urlFoto = data.fotoPerfil.startsWith('http') 
+                            ? data.fotoPerfil 
+                            : `http://localhost:3000/${data.fotoPerfil}`;
+                        setFotoActual(urlFoto);
+                    }
+                } else {
+                    setError(data.msg || 'Error al cargar los datos del perfil');
+                    if (response.status === 401 || response.status === 403) {
+                        navigate('/login');
+                    }
                 }
+            } catch (err) {
+                console.error('Error de red al cargar perfil:', err);
+                setError('Error de conexión con el servidor');
             }
         };
 
         fetchPerfil();
-    }, [navigate]);
+    }, [token, navigate]);
 
     // Manejar la actualización del perfil
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("¡Clic en Guardar Cambios detectado! Ejecutando handleSubmit...");
+        
         setMsg('');
         setError('');
 
         try {
-            const bodyData = {
-                nombre,
-                apellido,
-                curso,
-                credenciales
-            };
+            const formData = new FormData();
+            formData.append('nombre', nombre);
+            formData.append('apellido', apellido);
+            formData.append('curso', curso);
+            formData.append('credenciales', credenciales);
 
-            // Solo enviamos la contraseña si el usuario escribió una nueva
             if (password.trim() !== '') {
-                bodyData.password = password;
+                formData.append('password', password);
             }
 
-            await api.put('/Usuarios/perfil', bodyData, getAuthHeaders());
-            setMsg('¡Perfil actualizado con éxito!');
-            setPassword('');
+            if (foto) {
+                formData.append('fotoPerfil', foto);
+            }
+
+            console.log("Enviando FormData al servidor...");
+            const response = await fetch('http://localhost:3000/Usuarios/perfil', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+            console.log("Respuesta del servidor al actualizar:", data);
+
+            if (response.ok) {
+                setMsg('¡Perfil actualizado con éxito!');
+                setPassword('');
+                setFoto(null);
+
+                if (data.usuario && data.usuario.fotoPerfil) {
+                    const rutaDevuelta = data.usuario.fotoPerfil;
+                    const urlCompleta = rutaDevuelta.startsWith('http') 
+                        ? rutaDevuelta 
+                        : `http://localhost:3000/${rutaDevuelta}`;
+                    setFotoActual(urlCompleta);
+                }
+            } else {
+                setError(data.msg || 'Error al actualizar el perfil');
+            }
         } catch (err) {
-            setError(err.response?.data?.msg || 'Error al actualizar el perfil');
+            console.error('Error crítico en handleSubmit:', err);
+            setError('Error de conexión al enviar los datos');
         }
     };
 
@@ -80,6 +134,29 @@ export default function Perfil() {
             {error && <p className="msg-error">{error}</p>}
 
             <form onSubmit={handleSubmit} className="perfil-form">
+                
+                <div className="form-group" style={{ textAlign: 'center', marginBottom: '20px' }}>
+                    {fotoActual ? (
+                        <img 
+                            src={fotoActual} 
+                            alt="Foto de perfil" 
+                            style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', marginBottom: '10px', border: '2px solid #ddd' }} 
+                        />
+                    ) : (
+                        <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: '#e9ecef', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px', color: '#6c757d', fontWeight: 'bold' }}>
+                            Sin foto
+                        </div>
+                    )}
+                    <br />
+                    <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px' }}>Cambiar foto de perfil:</label>
+                    <input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={(e) => setFoto(e.target.files[0])} 
+                        className="form-control" 
+                    />
+                </div>
+
                 <div className="form-group">
                     <label>Nombre:</label>
                     <input 

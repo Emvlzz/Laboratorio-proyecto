@@ -41,6 +41,11 @@ const actualizarPerfil = async (req, res) => {
             usuario.password = await bcrypt.hash(password, salt);
         }
 
+        // --- NUEVO: Si se subió una foto mediante Multer, guardamos la ruta ---
+        if (req.file) {
+            usuario.fotoPerfil = `uploads/${req.file.filename}`;
+        }
+
         await usuario.save();
 
         // --- REGISTRO EN LA BITÁCORA DE AUDITORÍA ---
@@ -50,12 +55,24 @@ const actualizarPerfil = async (req, res) => {
             estado: 'exitoso'
         });
 
+        // --- NUEVO: EMITIR EL EVENTO EN TIEMPO REAL CON SOCKET.IO ---
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('usuarioActualizado', {
+                id: usuario.idUsuario, // Asegúrate de que coincida con el campo ID de tu modelo
+                nombre: usuario.nombre,
+                apellido: usuario.apellido,
+                fotoPerfil: usuario.fotoPerfil
+            });
+        }
+
         return res.json({ 
             msg: '¡Perfil actualizado con éxito!', 
             usuario: { 
                 nombre: usuario.nombre, 
                 apellido: usuario.apellido, 
-                curso: usuario.curso 
+                curso: usuario.curso,
+                fotoPerfil: usuario.fotoPerfil // Devolvemos también la foto en la respuesta
             } 
         });
     } catch (error) {
@@ -65,7 +82,6 @@ const actualizarPerfil = async (req, res) => {
 };
 
 module.exports = {
-    // ... tus otras funciones de usuarios (si las tienes) ...
     obtenerPerfil,
     actualizarPerfil
 };

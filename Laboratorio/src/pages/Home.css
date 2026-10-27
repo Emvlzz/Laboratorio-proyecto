@@ -5,6 +5,7 @@
     min-height: 100vh;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px 0; /* Añadido para que respire si la lista es larga */
 }
 
 .home-card {
@@ -15,6 +16,11 @@
     width: 100%;
     max-width: 450px;
     text-align: center;
+}
+
+/* Ampliamos ligeramente la tarjeta en Home para que entren bien los reportes */
+.home-card-wide {
+    max-width: 600px;
 }
 
 .home-title {
@@ -34,15 +40,41 @@
 /* Tarjeta de bienvenida del usuario */
 .user-welcome-box {
     margin-bottom: 20px;
-    padding: 12px;
+    padding: 15px;
     background: #f8f9fa;
     border-radius: 6px;
     border: 1px solid #e9ecef;
-    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.user-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 2px solid #3498db;
+}
+
+.user-avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    color: #6c757d;
+    font-weight: bold;
+    font-size: 12px;
 }
 
 .user-welcome-title {
-    margin: 0 0 4px 0;
+    margin: 5px 0 4px 0;
     font-size: 15px;
     color: #2c3e50;
     font-weight: bold;
@@ -107,4 +139,122 @@
 .btn-admin {
     background-color: #34495e;
     color: #fff;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+/* --- SECCIÓN NUEVA: Reportes en el Home --- */
+.reportes-section {
+    border-top: 1px solid #e9ecef;
+    margin-top: 30px;
+    padding-top: 20px;
+    text-align: left;
+}
+
+.reporte-form-box {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border: 1px solid #e9ecef;
+}
+
+.reporte-form-box h3,
+.mis-reportes-box h3 {
+    color: #2c3e50;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #34495e;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+}
+
+.msg-success {
+    color: #2ecc71;
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.msg-error {
+    color: #e74c3c;
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.no-reports-text {
+    color: #7f8c8d;
+    font-size: 14px;
+    font-style: italic;
+}
+
+.reportes-list {
+    list-style: none;
+    padding: 0;
+    max-height: 320px;
+    overflow-y: auto;
+    margin: 0;
+}
+
+.reporte-item {
+    border: 1px solid #e9ecef;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    background: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.reporte-item p {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    color: #2c3e50;
+}
+
+.estado-badge {
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.estado-badge.pendiente {
+    color: #e74c3c;
+}
+
+.estado-badge.resuelto {
+    color: #2ecc71;
+}
+
+.reporte-date {
+    color: #95a5a6;
+    font-size: 12px;
 }
