@@ -23,7 +23,7 @@ const Usuario = sequelize.define('Usuario', {
         type: DataTypes.STRING,
         allowNull: true
     },
-    credenciales: {
+    email: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
@@ -44,6 +44,15 @@ const Usuario = sequelize.define('Usuario', {
             key: 'idComputadora'
         },
 
+    },
+
+    resetToken: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    resetTokenExpire: {
+        type: DataTypes.DATE,
+        allowNull: true
     }
 }, {
     tableName: 'usuarios',

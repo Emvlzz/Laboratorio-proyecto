@@ -3,7 +3,7 @@
 ## Ya Implementado
 
 ### Backend
-* Autenticacion mediante JWT (almacena ID, rol, credenciales y nombre).
+* Autenticacion mediante JWT (almacena ID, rol, email y nombre).
 * Encriptacion de contraseñas con bcrypt.
 * Middlewares de seguridad: `verificarToken` y `esAdmin`.
 * Modelos y relaciones de Sequelize: `Usuario`, `Computadora`, `Carrito`, `Inventario`, `Reporte` y `Auditoria`.
@@ -13,7 +13,7 @@
 ### Frontend
 * Enrutamiento con React Router (`/`, `/login`, `/register`, `/admin`).
 * Inicio (`Home.jsx`): Muestra nombre y rol del usuario logueado. Oculta el boton de Administracion a usuarios no administradores.
-* Registro (`Register.jsx`): Formulario con campos Nombre, Apellido, Curso, Credenciales, Contraseña y Rol.
+* Registro (`Register.jsx`): Formulario con campos Nombre, Apellido, Curso, email, Contraseña y Rol.
 * Panel de Administracion (`AdminDashboard.jsx`): Interfaz con pestañas para Usuarios, Computadoras y Carritos, con asignacion de equipos en tiempo real y boton de navegacion al inicio.
 * Componentes e interfaz visual para las secciones de Inventario y Reportes.
 * Pestaña en el Panel de Administracion para visualizar los registros de Auditoria (bitacora).

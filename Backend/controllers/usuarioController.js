@@ -1,6 +1,6 @@
 const { Usuario, Auditoria } = require('../models');
 const bcrypt = require('bcrypt');
-
+//Recuperar contraseña con node mailer
 // Obtener el perfil del usuario autenticado
 const obtenerPerfil = async (req, res) => {
     try {
@@ -35,13 +35,13 @@ const actualizarPerfil = async (req, res) => {
         usuario.apellido = apellido !== undefined ? apellido : usuario.apellido;
         usuario.curso = curso !== undefined ? curso : usuario.curso;
 
-        // Si envía una contraseña nueva, la encriptamos
+
         if (password && password.trim() !== '') {
             const salt = await bcrypt.genSalt(10);
             usuario.password = await bcrypt.hash(password, salt);
         }
 
-        // --- NUEVO: Si se subió una foto mediante Multer, guardamos la ruta ---
+
         if (req.file) {
             usuario.fotoPerfil = `uploads/${req.file.filename}`;
         }
@@ -50,16 +50,15 @@ const actualizarPerfil = async (req, res) => {
 
         // --- REGISTRO EN LA BITÁCORA DE AUDITORÍA ---
         await Auditoria.create({
-            descripcion: `Actualización de perfil: El usuario ${usuario.nombre} (${usuario.credenciales}) actualizó su información personal.`,
+            descripcion: `Actualización de perfil: El usuario ${usuario.nombre} (${usuario.email}) actualizó su información personal.`,
             idUsuario: usuario.idUsuario,
             estado: 'exitoso'
         });
 
-        // --- NUEVO: EMITIR EL EVENTO EN TIEMPO REAL CON SOCKET.IO ---
         const io = req.app.get('socketio');
         if (io) {
             io.emit('usuarioActualizado', {
-                id: usuario.idUsuario, // Asegúrate de que coincida con el campo ID de tu modelo
+                id: usuario.idUsuario, 
                 nombre: usuario.nombre,
                 apellido: usuario.apellido,
                 fotoPerfil: usuario.fotoPerfil
@@ -72,7 +71,7 @@ const actualizarPerfil = async (req, res) => {
                 nombre: usuario.nombre, 
                 apellido: usuario.apellido, 
                 curso: usuario.curso,
-                fotoPerfil: usuario.fotoPerfil // Devolvemos también la foto en la respuesta
+                fotoPerfil: usuario.fotoPerfil
             } 
         });
     } catch (error) {

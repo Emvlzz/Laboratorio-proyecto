@@ -6,7 +6,7 @@ export default function Register() {
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
     const [curso, setCurso] = useState('');
-    const [credenciales, setCredenciales] = useState('');
+    const [email, setEmail] = useState(''); // <--- Cambiado de email a email
     const [password, setPassword] = useState('');
     const [rol, setRol] = useState('alumno');
     
@@ -20,12 +20,11 @@ export default function Register() {
         setMsg('');
 
         try {
-            // Asegúrate de que la ruta coincida con la de tu backend (ej. /auth/register o /Usuarios/register)
             await api.post('/auth/register', {
                 nombre,
                 apellido,
                 curso,
-                credenciales,
+                email, // <--- Enviamos email en lugar de email
                 password,
                 rol
             });
@@ -41,7 +40,7 @@ export default function Register() {
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', fontFamily: 'sans-serif' }}>
-            <div style={{ background: '#ffffff', padding: '40px', borderRadius: '12px', boxScroll: '0 8px 24px rgba(0,0,0,0.1)', width: '100%', maxWidth: '450px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}>
+            <div style={{ background: '#ffffff', padding: '40px', borderRadius: '12px', width: '100%', maxWidth: '450px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}>
                 <h2 style={{ textAlign: 'center', color: '#2c3e50', marginBottom: '20px' }}>Registro de Usuario</h2>
 
                 {error && <p style={{ color: 'red', background: '#f8d7da', padding: '10px', borderRadius: '4px', fontSize: '14px', textAlign: 'center' }}>{error}</p>}
@@ -82,11 +81,11 @@ export default function Register() {
                     </div>
 
                     <div>
-                        <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>Credencial (Email / Usuario):</label>
+                        <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>Correo Electrónico (Email):</label>
                         <input 
-                            type="text" 
-                            value={credenciales} 
-                            onChange={(e) => setCredenciales(e.target.value)} 
+                            type="email" // <--- Tipo email para validación en navegador
+                            value={email} 
+                            onChange={(e) => setEmail(e.target.value)} 
                             required 
                             style={{ width: '100%', padding: '10px', marginTop: '5px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }} 
                         />
@@ -127,10 +126,6 @@ export default function Register() {
                 <div style={{ textAlign: 'center', marginTop: '20px' }}>
                     <Link to="/login" style={{ color: '#007bff', textDecoration: 'none', fontSize: '14px' }}>
                         ¿Ya tienes cuenta? Inicia sesión aquí
-                    </Link>
-                    <br />
-                    <Link to="/" style={{ color: '#6c757d', textDecoration: 'none', fontSize: '13px', display: 'inline-block', marginTop: '10px' }}>
-                        ← Volver al Inicio
                     </Link>
                 </div>
             </div>

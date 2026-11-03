@@ -76,7 +76,7 @@ export default function AdminDashboard() {
         } else {
             fetchData();
         }
-    }, []);
+    }, [navigate]);
 
     const handleDelete = async (endpoint, id) => {
         if (!window.confirm('¿Estás seguro de que deseas eliminar este elemento?')) return;
@@ -203,7 +203,7 @@ export default function AdminDashboard() {
                                 <th>Nombre</th>
                                 <th>Apellido</th>
                                 <th>Curso / Aula</th>
-                                <th>Credencial</th>
+                                <th>Email / Credencial</th>
                                 <th>Rol</th>
                                 <th>Computadora Asignada</th>
                                 <th>Acciones</th>
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
                                     <td>{u.nombre}</td>
                                     <td>{u.apellido || '-'}</td>
                                     <td>{u.curso || '-'}</td>
-                                    <td>{u.credenciales}</td>
+                                    <td>{u.email || u.email}</td>
                                     <td>
                                         <span className={u.rol === 'administrador' ? 'badge-admin' : 'badge-user'}>
                                             {u.rol}
@@ -279,6 +279,7 @@ export default function AdminDashboard() {
                                 <th>ID</th>
                                 <th>Nombre</th>
                                 <th>Carrito Asignado</th>
+                                <th>Estado Operativo</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -286,9 +287,38 @@ export default function AdminDashboard() {
                             {computadoras.map(c => (
                                 <tr key={c.idComputadora}>
                                     <td>{c.idComputadora}</td>
-                                    <td>{c.nombre}</td>
+                                    <td style={{ fontWeight: 'bold' }}>{c.nombre}</td>
                                     <td>
                                         {c.carrito ? `${c.carrito.nombre} (Curso: ${c.carrito.curso})` : 'Sin asignar'}
+                                    </td>
+                                    <td>
+                                        {/* Selector para ver y cambiar el estado directamente */}
+                                        <select 
+                                            value={c.estado || 'disponible'}
+                                            onChange={async (e) => {
+                                                const nuevoEstado = e.target.value;
+                                                try {
+                                                    await api.put(`/computadoras/${c.idComputadora}/estado`, { nuevoEstado }, getAuthHeaders());
+                                                    setMsg(`¡Estado de "${c.nombre}" cambiado a ${nuevoEstado}!`);
+                                                    fetchData();
+                                                } catch (err) {
+                                                    setError(err.response?.data?.msg || 'Error al actualizar estado');
+                                                }
+                                            }}
+                                            style={{
+                                                padding: '6px',
+                                                borderRadius: '4px',
+                                                fontWeight: 'bold',
+                                                background: c.estado === 'disponible' ? '#d4edda' : c.estado === 'en uso' ? '#cce5ff' : '#f8d7da',
+                                                color: c.estado === 'disponible' ? '#155724' : c.estado === 'en uso' ? '#004085' : '#721c24',
+                                                border: '1px solid #ccc',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            <option value="disponible">Disponible</option>
+                                            <option value="en uso">En Uso</option>
+                                            <option value="mantenimiento">Mantenimiento</option>
+                                        </select>
                                     </td>
                                     <td>
                                         <button onClick={() => handleDelete('computadoras', c.idComputadora)} className="btn-danger-custom">Eliminar</button>
@@ -405,8 +435,8 @@ export default function AdminDashboard() {
                                 <input type="text" placeholder="Ej: Periféricos, Cables, Herramientas" value={invCategoria} onChange={(e) => setInvCategoria(e.target.value)} className="form-control" />
                             </div>
                             <div style={{ width: '120px' }}>
-                                <label>Cantidad:</label><br />
-                                <input type="number" min="1" value={invCantidad} onChange={(e) => setInvCantidad(e.target.value)} required className="form-control" />
+                                <label>Cantidad Inicial:</label><br />
+                                <input type="number" min="0" value={invCantidad} onChange={(e) => setInvCantidad(e.target.value)} required className="form-control" />
                             </div>
                         </div>
                         <div className="form-group">
@@ -426,26 +456,81 @@ export default function AdminDashboard() {
                                 <th>ID</th>
                                 <th>Artículo</th>
                                 <th>Categoría</th>
-                                <th>Stock / Cantidad</th>
+                                <th>Stock Actual</th>
                                 <th>Ubicación</th>
-                                <th>Descripción</th>
+                                <th>Ajustar Stock</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {inventario.map(item => (
-                                <tr key={item.idInventario}>
-                                    <td>{item.idInventario}</td>
-                                    <td style={{ fontWeight: 'bold' }}>{item.nombreItem}</td>
-                                    <td>{item.categoria}</td>
-                                    <td>{item.cantidad}</td>
-                                    <td>{item.ubicacion}</td>
-                                    <td>{item.descripcion || '-'}</td>
-                                    <td>
-                                        <button onClick={() => handleDelete('inventario', item.idInventario)} className="btn-danger-custom">Eliminar</button>
-                                    </td>
-                                </tr>
-                           ))}
+                            {inventario.map(item => {
+                                const itemId = item.idItem || item.idInventario;
+                                return (
+                                    <tr key={itemId}>
+                                        <td>{itemId}</td>
+                                        <td style={{ fontWeight: 'bold' }}>{item.nombreItem}</td>
+                                        <td>{item.categoria}</td>
+                                        <td style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff' }}>
+                                            {item.cantidad}
+                                        </td>
+                                        <td>{item.ubicacion}</td>
+                                        <td>
+                                            <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+                                                <button 
+                                                    type="button"
+                                                    onClick={async () => {
+                                                        const cant = prompt(`¿Cuántas unidades deseas AUMENTAR (Entrada) para "${item.nombreItem}"?`, "1");
+                                                        if (cant && !isNaN(cant) && Number(cant) > 0) {
+                                                            try {
+                                                                await api.post(`/inventario/${itemId}/movimiento`, {
+                                                                    tipoMovimiento: 'entrada',
+                                                                    cantidad: Number(cant),
+                                                                    motivo: 'Aumento manual desde panel'
+                                                                }, getAuthHeaders());
+                                                                setMsg('¡Stock incrementado con éxito!');
+                                                                fetchData();
+                                                            } catch (err) {
+                                                                setError(err.response?.data?.msg || 'Error al aumentar stock');
+                                                            }
+                                                        }
+                                                    }}
+                                                    style={{ background: '#28a745', color: '#white', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer', color: '#fff' }}
+                                                    title="Aumentar Stock"
+                                                >
+                                                    + Agregar
+                                                </button>
+
+                                                <button 
+                                                    type="button"
+                                                    onClick={async () => {
+                                                        const cant = prompt(`¿Cuántas unidades deseas REDUCIR (Salida) para "${item.nombreItem}"?`, "1");
+                                                        if (cant && !isNaN(cant) && Number(cant) > 0) {
+                                                            try {
+                                                                await api.post(`/inventario/${itemId}/movimiento`, {
+                                                                    tipoMovimiento: 'salida',
+                                                                    cantidad: Number(cant),
+                                                                    motivo: 'Reducción manual desde panel'
+                                                                }, getAuthHeaders());
+                                                                setMsg('¡Stock reducido con éxito!');
+                                                                fetchData();
+                                                            } catch (err) {
+                                                                setError(err.response?.data?.msg || 'Error al reducir stock');
+                                                            }
+                                                        }
+                                                    }}
+                                                    style={{ background: '#ffc107', color: '#000', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                                                    title="Reducir Stock"
+                                                >
+                                                    - Retirar
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button onClick={() => handleDelete('inventario', itemId)} className="btn-danger-custom">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

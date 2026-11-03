@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-// 👇 Asegúrate de importar Carrito y Computadora desde los modelos
-const { Carrito, Computadora } = require('../models');
+// 👇 Importamos Auditoria junto con los modelos
+const { Carrito, Computadora, Auditoria } = require('../models');
 
 // GET: Listar todos los carritos
 router.get('/', async (req, res) => {
     try {
         const carritos = await Carrito.findAll({
-            include: [{ model: Computadora, as: 'computadoras' }] // Opcional, trae las compus de cada carrito
+            include: [{ model: Computadora, as: 'computadoras' }]
         });
         res.json(carritos);
     } catch (error) {
@@ -25,6 +25,13 @@ router.post('/', async (req, res) => {
 
         const { nombre, descripcion, curso } = req.body;
         const nuevoCarrito = await Carrito.create({ nombre, descripcion, curso });
+
+        const idAdmin = req.user?.id || req.user?.idUsuario || null;
+        await Auditoria.create({
+            descripcion: `Gestión de carritos: Se creó el carrito "${nombre}" (ID: ${nuevoCarrito.idCarrito}).`,
+            idUsuario: idAdmin,
+            estado: 'exitoso'
+        });
 
         res.status(201).json({ msg: 'Carrito creado con éxito', carrito: nuevoCarrito });
     } catch (error) {
@@ -47,7 +54,16 @@ router.delete('/:id', async (req, res) => {
             return res.status(404).json({ msg: 'Carrito no encontrado' });
         }
 
+        const nombreCarrito = carrito.nombre;
         await carrito.destroy();
+
+        const idAdmin = req.user?.id || req.user?.idUsuario || null;
+        await Auditoria.create({
+            descripcion: `Gestión de carritos: Se eliminó el carrito "${nombreCarrito}" (ID: ${id}).`,
+            idUsuario: idAdmin,
+            estado: 'exitoso'
+        });
+
         res.status(200).json({ msg: 'Carrito eliminado con éxito' });
     } catch (error) {
         console.error("Error al eliminar carrito:", error);

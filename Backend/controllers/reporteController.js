@@ -1,19 +1,17 @@
 const { Reporte, Usuario, Computadora } = require('../models');
 
-// Obtener reportes filtrados por rol
 const obtenerReportes = async (req, res) => {
     try {
-        const usuarioLogueado = req.user; // Obtenido del token verificado
+        const usuarioLogueado = req.user; 
 
         let opcionesConsulta = {
             include: [
-                { model: Usuario, as: 'autor', attributes: ['nombre', 'apellido', 'rol', 'credenciales'] },
+                { model: Usuario, as: 'autor', attributes: ['nombre', 'apellido', 'rol', 'email'] },
                 { model: Computadora, as: 'computadora', attributes: ['nombre'] }
             ],
             order: [['createdAt', 'DESC']]
         };
 
-        // Si el usuario NO es administrador (es alumno o profesor), filtramos sus reportes
         if (usuarioLogueado.rol !== 'administrador') {
             opcionesConsulta.where = { idUsuario: usuarioLogueado.id };
         }
@@ -48,7 +46,7 @@ const crearReporte = async (req, res) => {
         if (io) {
             const reporteConDetalles = await Reporte.findByPk(nuevoReporte.id, {
                 include: [
-                    { model: Usuario, as: 'autor', attributes: ['nombre', 'apellido', 'rol', 'credenciales'] },
+                    { model: Usuario, as: 'autor', attributes: ['nombre', 'apellido', 'rol', 'email'] },
                     { model: Computadora, as: 'computadora', attributes: ['nombre'] }
                 ]
             });

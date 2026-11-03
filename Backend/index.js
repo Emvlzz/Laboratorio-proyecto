@@ -2,6 +2,7 @@ const express = require("express");
 const http = require('http'); 
 const { Server } = require('socket.io'); 
 const path = require('path');
+const cors = require('cors'); // <-- Importamos cors para manejarlo limpiamente
 const sequelize = require('./config/db');
 const miMiddleware = require('./middlewares/auth');
 
@@ -17,30 +18,43 @@ const inventarioRoutes = require('./routes/inventarioRoutes');
 const auditoriaRoutes = require('./routes/auditoriaRoutes.js');
 const ReporteRoutes = require('./routes/reporteRoutes.js');
 
+const app = express();
+const httpServer = http.createServer(app);
 
-const app = express(); // Cambiamos 'server' a 'app' para Express
-const httpServer = http.createServer(app); // Creamos el servidor HTTP
+// 1. Definimos los únicos orígenes permitidos (localhost y tu IP de red local)
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://192.168.1.4:5173',
+    'http://181.80.139.118:5173'
+];
 
-// <-- 4. Configurar Socket.io con las mismas políticas de CORS de tu frontend
+// 2. Configurar Socket.io limitando los orígenes a la lista blanca
 const io = new Server(httpServer, {
     cors: {
-        origin: 'http://localhost:5173',
+        origin: allowedOrigins,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
-        credentials: true
+        credentials: true,
+        allowedHeaders: ['Content-Type', 'Authorization']
     }
 });
-
 
 app.use(express.json());
 
 // Guardamos 'io' globalmente para usarlo en los controladores
 app.set('socketio', io);
 
-// <-- 5. Hacer pública la carpeta 'uploads' para que las fotos de perfil se puedan ver desde el navegador
+// Hacer pública la carpeta 'uploads'
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// 3. Middleware de CORS estricto para Express usando la lista blanca
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+    const origin = req.headers.origin;
+    
+    // Si el origen de la petición está en nuestra lista permitida, lo autorizamos
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -50,7 +64,6 @@ app.use((req, res, next) => {
     }
     next();
 });
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Ruta de comprobación raíz
 app.get('/', (req, res) => {
@@ -71,7 +84,7 @@ app.use('/inventario', miMiddleware.verificarToken, inventarioRoutes);
 app.use('/auditoria', miMiddleware.verificarToken, auditoriaRoutes);
 app.use('/reportes', miMiddleware.verificarToken, ReporteRoutes);
 
-// <-- 6. Escuchar eventos de conexión de Socket.io
+// Escuchar eventos de conexión de Socket.io
 io.on('connection', (socket) => {
     console.log('Un cliente se ha conectado por WebSockets:', socket.id);
 });

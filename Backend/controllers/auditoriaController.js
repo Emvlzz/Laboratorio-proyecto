@@ -4,7 +4,7 @@ const { Auditoria, Usuario } = require('../models');
 const obtenerAuditorias = async (req, res) => {
     try {
         const auditorias = await Auditoria.findAll({
-            include: [{ model: Usuario, as: 'autor', attributes: ['nombre', 'apellido', 'rol', 'credenciales'] }],
+            include: [{ model: Usuario, as: 'autor', attributes: ['nombre', 'apellido', 'rol', 'email'] }],
             order: [['createdAt', 'DESC']]
         });
         return res.json(auditorias);

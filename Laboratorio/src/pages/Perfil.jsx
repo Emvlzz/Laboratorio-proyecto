@@ -6,10 +6,14 @@ export default function Perfil() {
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
     const [curso, setCurso] = useState('');
-    const [credenciales, setCredenciales] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [foto, setFoto] = useState(null); 
     const [fotoActual, setFotoActual] = useState(''); 
+    
+    // Estados para la computadora asignada
+    const [miCompu, setMiCompu] = useState(null);
+    const [estadoCompu, setEstadoCompu] = useState('');
     
     const [msg, setMsg] = useState('');
     const [error, setError] = useState('');
@@ -17,17 +21,16 @@ export default function Perfil() {
 
     const token = localStorage.getItem('token');
 
-    // Cargar los datos del perfil al montar el componente
+    // Cargar los datos del perfil y la computadora al montar el componente
     useEffect(() => {
-        const fetchPerfil = async () => {
+        const fetchPerfilYCompu = async () => {
             if (!token) {
-                console.warn("No hay token, redirigiendo a login...");
                 navigate('/login');
                 return;
             }
 
             try {
-                console.log("Cargando perfil desde el servidor...");
+                // 1. Cargar datos del perfil
                 const response = await fetch('http://localhost:3000/Usuarios/perfil', {
                     headers: { 
                         'Authorization': `Bearer ${token}` 
@@ -35,13 +38,12 @@ export default function Perfil() {
                 });
                 
                 const data = await response.json();
-                console.log("Datos recibidos del perfil:", data);
 
                 if (response.ok) {
                     setNombre(data.nombre || '');
                     setApellido(data.apellido || '');
                     setCurso(data.curso || '');
-                    setCredenciales(data.credenciales || '');
+                    setEmail(data.email || '');
                     
                     if (data.fotoPerfil) {
                         const urlFoto = data.fotoPerfil.startsWith('http') 
@@ -53,22 +55,32 @@ export default function Perfil() {
                     setError(data.msg || 'Error al cargar los datos del perfil');
                     if (response.status === 401 || response.status === 403) {
                         navigate('/login');
+                        return;
                     }
                 }
+
+                // 2. Cargar computadora asignada al usuario
+                const resCompu = await fetch('http://localhost:3000/Usuarios/mi-computadora', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const compuData = await resCompu.json();
+                if (compuData.asignada) {
+                    setMiCompu(compuData.computadora);
+                    setEstadoCompu(compuData.computadora.estado || 'disponible');
+                }
+
             } catch (err) {
-                console.error('Error de red al cargar perfil:', err);
+                console.error('Error de red al cargar perfil o computadora:', err);
                 setError('Error de conexión con el servidor');
             }
         };
 
-        fetchPerfil();
+        fetchPerfilYCompu();
     }, [token, navigate]);
 
     // Manejar la actualización del perfil
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("¡Clic en Guardar Cambios detectado! Ejecutando handleSubmit...");
-        
         setMsg('');
         setError('');
 
@@ -77,7 +89,7 @@ export default function Perfil() {
             formData.append('nombre', nombre);
             formData.append('apellido', apellido);
             formData.append('curso', curso);
-            formData.append('credenciales', credenciales);
+            formData.append('email', email);
 
             if (password.trim() !== '') {
                 formData.append('password', password);
@@ -87,7 +99,6 @@ export default function Perfil() {
                 formData.append('fotoPerfil', foto);
             }
 
-            console.log("Enviando FormData al servidor...");
             const response = await fetch('http://localhost:3000/Usuarios/perfil', {
                 method: 'PUT',
                 headers: {
@@ -97,7 +108,6 @@ export default function Perfil() {
             });
 
             const data = await response.json();
-            console.log("Respuesta del servidor al actualizar:", data);
 
             if (response.ok) {
                 setMsg('¡Perfil actualizado con éxito!');
@@ -120,6 +130,86 @@ export default function Perfil() {
         }
     };
 
+    // Función para cambiar el estado de la computadora asignada
+    const handleCambiarEstadoPC = async (nuevoEstado) => {
+        setMsg('');
+        setError('');
+        try {
+            const res = await fetch('http://localhost:3000/Usuarios/mi-computadora/estado', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ nuevoEstado })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setEstadoCompu(nuevoEstado);
+                setMsg('¡Estado de la computadora actualizado con éxito!');
+            } else {
+                setError(data.msg || 'Error al cambiar el estado de la PC');
+            }
+        } catch (err) {
+            setError('Error de conexión al actualizar el estado.');
+        }
+    };
+
+    // Función para solicitar la recuperación de contraseña
+    const handleSolicitarRecuperacion = async () => {
+        if (!email) {
+            setError('No se encontró un correo electrónico válido para la recuperación.');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:3000/auth/forgot-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setMsg('Se ha enviado un correo de recuperación a tu casilla.');
+            } else {
+                setError(data.msg || 'Error al solicitar la recuperación.');
+            }
+        } catch (err) {
+            setError('Error de conexión al solicitar recuperación.');
+        }
+    };
+
+    // Función para eliminar la cuenta propia
+    const handleEliminarCuenta = async () => {
+        if (!window.confirm('¿Estás completamente seguro de que deseas eliminar tu cuenta permanentemente? Esta acción no se puede deshacer.')) {
+            return;
+        }
+
+        try {
+            const responsePerfil = await fetch('http://localhost:3000/Usuarios/perfil', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const userData = await responsePerfil.json();
+            const userId = userData.idUsuario;
+
+            const response = await fetch(`http://localhost:3000/Usuarios/${userId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                localStorage.clear();
+                alert('Tu cuenta ha sido eliminada con éxito.');
+                navigate('/login');
+            } else {
+                const data = await response.json();
+                setError(data.msg || 'No se pudo eliminar la cuenta.');
+            }
+        } catch (err) {
+            setError('Error al intentar eliminar la cuenta.');
+        }
+    };
+
     return (
         <div className="perfil-container">
             <div className="perfil-back-wrapper">
@@ -128,7 +218,7 @@ export default function Perfil() {
                 </Link>
             </div>
 
-            <h2 className="perfil-title">Editar Mi Perfil</h2>
+            <h2 className="perfil-title">Mi Perfil y Configuración</h2>
 
             {msg && <p className="msg-success">{msg}</p>}
             {error && <p className="msg-error">{error}</p>}
@@ -189,11 +279,11 @@ export default function Perfil() {
                 </div>
 
                 <div className="form-group">
-                    <label>Credencial / Usuario:</label>
+                    <label>Correo Electrónico (Email):</label>
                     <input 
-                        type="text" 
-                        value={credenciales} 
-                        onChange={(e) => setCredenciales(e.target.value)} 
+                        type="email" 
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)} 
                         required 
                         className="form-control" 
                     />
@@ -214,6 +304,76 @@ export default function Perfil() {
                     Guardar Cambios
                 </button>
             </form>
+
+            {/* SECCIÓN COMPUTADORA ASIGNADA */}
+            <div style={{ marginTop: '30px', padding: '20px', border: '1px solid #c3cfe2', borderRadius: '8px', background: '#f8f9fa' }}>
+                <h3 style={{ color: '#2c3e50', marginTop: 0 }}>💻 Mi Computadora Asignada</h3>
+                {miCompu ? (
+                    <div>
+                        <p><strong>Equipo:</strong> {miCompu.nombre}</p>
+                        <p><strong>Carrito:</strong> {miCompu.carrito ? `${miCompu.carrito.nombre} (Curso: ${miCompu.carrito.curso})` : 'Sin Carrito'}</p>
+                        <p>
+                            <strong>Estado Actual:</strong>{' '}
+                            <span style={{ 
+                                padding: '4px 8px', 
+                                borderRadius: '4px', 
+                                fontWeight: 'bold',
+                                color: '#fff',
+                                background: estadoCompu === 'disponible' ? '#28a745' : estadoCompu === 'en uso' ? '#007bff' : '#dc3545'
+                            }}>
+                                {estadoCompu.toUpperCase()}
+                            </span>
+                        </p>
+
+                        <div style={{ marginTop: '15px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                            <button 
+                                type="button" 
+                                onClick={() => handleCambiarEstadoPC('en uso')}
+                                style={{ background: '#007bff', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer' }}
+                            >
+                                Marcar En Uso
+                            </button>
+
+                            <button 
+                                type="button" 
+                                onClick={() => handleCambiarEstadoPC('disponible')}
+                                style={{ background: '#28a745', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer' }}
+                            >
+                                Marcar Disponible / Libre
+                            </button>
+
+                            <button 
+                                type="button" 
+                                onClick={() => handleCambiarEstadoPC('mantenimiento')}
+                                style={{ background: '#ffc107', color: '#000', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                            >
+                                Reportar Mantenimiento
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <p style={{ color: '#6c757d' }}>No tienes ninguna computadora asignada actualmente por el administrador.</p>
+                )}
+            </div>
+
+            {/* Botones adicionales de cuenta */}
+            <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <button 
+                    type="button" 
+                    onClick={handleSolicitarRecuperacion}
+                    style={{ background: '#17a2b8', color: '#fff', border: 'none', padding: '10px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                    Recuperar Contraseña por Correo
+                </button>
+
+                <button 
+                    type="button" 
+                    onClick={handleEliminarCuenta}
+                    style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '10px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                    Eliminar mi Cuenta
+                </button>
+            </div>
         </div>
     );
 }
