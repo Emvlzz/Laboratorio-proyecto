@@ -7,7 +7,6 @@ export default function Perfil() {
     const [apellido, setApellido] = useState('');
     const [curso, setCurso] = useState('');
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [foto, setFoto] = useState(null); 
     const [fotoActual, setFotoActual] = useState(''); 
     const [miCompu, setMiCompu] = useState(null);
@@ -79,9 +78,6 @@ export default function Perfil() {
             formData.append('curso', curso);
             formData.append('email', email);
 
-            if (password.trim() !== '') {
-                formData.append('password', password);
-            }
             if (foto) {
                 formData.append('fotoPerfil', foto);
             }
@@ -96,7 +92,6 @@ export default function Perfil() {
 
             if (response.ok) {
                 setMsg('¡Perfil actualizado con éxito!');
-                setPassword('');
                 setFoto(null);
 
                 if (data.usuario && data.usuario.fotoPerfil) {
@@ -232,16 +227,6 @@ export default function Perfil() {
                                 value={email} 
                                 onChange={(e) => setEmail(e.target.value)} 
                                 required 
-                            />
-                        </div>
-
-                        <div className="perfil-field">
-                            <label>Nueva Contraseña</label>
-                            <input 
-                                type="password" 
-                                value={password} 
-                                onChange={(e) => setPassword(e.target.value)} 
-                                placeholder="Dejar en blanco para mantener la actual" 
                             />
                         </div>
 

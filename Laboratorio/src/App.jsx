@@ -2,9 +2,11 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
+import ResetPassword from './components/ResetPassword'; 
 import Home from './pages/Home';
 import AdminDashboard from './pages/AdminDashboard';
 import Perfil from './pages/Perfil';
+
 // Componente para proteger vistas privadas
 const PrivateRoute = ({ children }) => {
     const token = localStorage.getItem('token');
@@ -17,6 +19,7 @@ export default function App() {
             <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/reset-password" element={<ResetPassword />} /> {}
             <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
             <Route path="/perfil" element={<PrivateRoute><Perfil /></PrivateRoute>} />
         </Routes>

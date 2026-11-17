@@ -13,8 +13,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'mordekaiser';
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'lautarovalenzuela98787@gmail.com',         // <--- Tu correo de Gmail aquí
-        pass: 'qile pjus xaen eotz'      // <--- Tu contraseña de aplicación aquí
+        user: 'laboratorioproyectoet36@gmail.com',         // <--- Tu correo de Gmail aquí
+        pass: 'rpda zmlj lgcm jpth'      // <--- Tu contraseña de aplicación aquí
     }
 });
 

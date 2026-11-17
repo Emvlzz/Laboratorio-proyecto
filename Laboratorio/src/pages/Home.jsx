@@ -152,7 +152,7 @@ export default function Home() {
                         )}
 
                         <p className="user-welcome-title">
-                            👋 Hola, {user.nombre} {user.apellido || ''}
+                             Hola, {user.nombre} {user.apellido || ''}
                         </p>
                         <p className="user-welcome-role">
                             Rol: <strong>{user.rol}</strong>
