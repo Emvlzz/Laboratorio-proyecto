@@ -1,163 +1,264 @@
-.dashboard-container {
-    padding: 30px;
-    font-family: sans-serif;
-    max-width: 1200px;
-    margin: 0 auto;
+/* --- RESET GLOBAL Y PANTALLA COMPLETA --- */
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f3f2f1 !important;
+    color: #323130;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    box-sizing: border-box;
 }
 
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+/* Contenedor principal: Ocupa el 100% de la pantalla sin restricciones */
+.dashboard-container {
+    width: 100% !important;
+    min-height: 100vh;
+    padding: 30px 40px;
+    background-color: #f3f2f1;
+    box-sizing: border-box;
+    margin: 0 !important;
+}
+
+/* Enlaces y navegación */
 .dashboard-back-wrapper {
     margin-bottom: 20px;
 }
 
 .dashboard-back-link {
-    display: inline-block;
-    padding: 8px 16px;
-    background: #6c757d;
-    color: #fff;
+    color: #0078d4;
     text-decoration: none;
-    border-radius: 4px;
-    font-weight: bold;
+    font-weight: 600;
     font-size: 14px;
 }
 
-.dashboard-title {
-    margin-bottom: 20px;
+.dashboard-back-link:hover {
+    text-decoration: underline;
 }
 
+.dashboard-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #201f1e;
+    margin-bottom: 24px;
+}
+
+/* --- ALERTAS --- */
 .msg-success {
-    color: green;
-    font-weight: bold;
+    background-color: #dff6dd;
+    color: #107c10;
+    border: 1px solid #b8e6b4;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .msg-error {
-    color: red;
-    font-weight: bold;
+    background-color: #fde7e9;
+    color: #a80000;
+    border: 1px solid #f9c2c6;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 500;
 }
 
-/* Pestañas de Navegación */
+/* --- PESTAÑAS (TABS) --- */
 .dashboard-tabs {
-    margin-bottom: 20px;
     display: flex;
-    gap: 10px;
-    border-bottom: 2px solid #ddd;
-    padding-bottom: 10px;
+    gap: 8px;
     flex-wrap: wrap;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #edebe9;
+    padding-bottom: 12px;
+    width: 100%;
 }
 
 .tab-btn {
     padding: 10px 20px;
-    border: 1px solid #ccc;
+    font-size: 14px;
+    font-weight: 600;
     border-radius: 4px;
+    border: 1px solid transparent;
     cursor: pointer;
-    font-weight: 500;
+    transition: all 0.2s ease;
 }
 
 .tab-btn.active {
-    background: #007bff;
-    color: #fff;
-    border-color: #007bff;
+    background-color: #0078d4;
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .tab-btn.inactive {
-    background: #f8f9fa;
-    color: #333;
+    background-color: #ffffff;
+    color: #323130;
+    border-color: #8a8886;
 }
 
-/* Formularios y Tarjetas */
+.tab-btn.inactive:hover {
+    background-color: #f3f2f1;
+}
+
+/* --- FORMULARIOS --- */
 .dashboard-form {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-    border: 1px solid #e1e1e1;
-}
-
-.form-group {
-    margin-bottom: 10px;
-}
-
-.form-row {
-    margin-bottom: 10px;
-    display: flex;
-    gap: 10px;
-}
-
-.form-control {
+    background: #ffffff;
+    border: 1px solid #edebe9;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 1.6px 3.6px 0 rgba(0,0,0,0.13), 0 0.3px 0.9px 0 rgba(0,0,0,0.11);
     width: 100%;
-    padding: 6px;
     box-sizing: border-box;
 }
 
-/* Tablas */
-.dashboard-table {
+.dashboard-form h4 {
+    margin-top: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #201f1e;
+    margin-bottom: 16px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-row {
+    display: flex;
+    gap: 16px;
     width: 100%;
+}
+
+/* Inputs con fondo blanco y texto oscuro visible */
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 6px;
+    background-color: #ffffff !important;
+    color: #323130 !important;
+    border: 1px solid #8a8886;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #0078d4;
+    box-shadow: 0 0 0 1px #0078d4;
+}
+
+/* --- TABLAS DE ANCHO COMPLETO --- */
+.dashboard-table {
+    width: 100% !important;
     border-collapse: collapse;
-    margin-top: 10px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1.6px 3.6px 0 rgba(0,0,0,0.13), 0 0.3px 0.9px 0 rgba(0,0,0,0.11);
+    margin-bottom: 40px;
 }
 
 .dashboard-table th {
-    padding: 10px;
-    border: 1px solid #ddd;
-    background: #f1f1f1;
+    background-color: #faf9f8;
+    color: #323130;
+    font-weight: 600;
     text-align: left;
+    padding: 14px 16px;
+    border-bottom: 1px solid #edebe9;
+    font-size: 14px;
 }
 
 .dashboard-table td {
-    padding: 10px;
-    border: 1px solid #ddd;
+    padding: 14px 16px;
+    border-bottom: 1px solid #f3f2f1;
+    color: #323130;
+    font-size: 14px;
+    vertical-align: middle;
 }
 
-/* Badges y Botones de Acción */
+.dashboard-table tr:hover {
+    background-color: #faf9f8;
+}
+
+/* --- BADGES Y ETIQUETAS --- */
 .badge-admin {
-    padding: 3px 8px;
-    border-radius: 4px;
-    background: #ffc107;
+    background-color: #dff6dd;
+    color: #107c10;
+    padding: 4px 10px;
+    border-radius: 12px;
     font-size: 12px;
-    text-transform: capitalize;
+    font-weight: 600;
+    text-transform: uppercase;
 }
 
 .badge-user {
-    padding: 3px 8px;
-    border-radius: 4px;
-    background: #e2e3e5;
+    background-color: #f3f2f1;
+    color: #605e5c;
+    padding: 4px 10px;
+    border-radius: 12px;
     font-size: 12px;
-    text-transform: capitalize;
+    font-weight: 600;
+    text-transform: uppercase;
 }
 
 .badge-reporte-pendiente {
-    padding: 4px 8px;
-    border-radius: 4px;
-    background: #ffc107;
-    color: #000;
-    font-weight: bold;
+    background-color: #fff4ce;
+    color: #8a6116;
+    padding: 4px 10px;
+    border-radius: 12px;
     font-size: 12px;
-    text-transform: capitalize;
+    font-weight: 600;
 }
 
 .badge-reporte-completado {
-    padding: 4px 8px;
-    border-radius: 4px;
-    background: #28a745;
-    color: #fff;
-    font-weight: bold;
+    background-color: #dff6dd;
+    color: #107c10;
+    padding: 4px 10px;
+    border-radius: 12px;
     font-size: 12px;
-    text-transform: capitalize;
+    font-weight: 600;
 }
 
+/* --- BOTONES --- */
 .btn-success-custom {
-    background: #28a745;
-    color: #fff;
+    background-color: #107c10;
+    color: #ffffff;
     border: none;
-    padding: 8px 15px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.btn-success-custom:hover {
+    background-color: #0e6b0e;
 }
 
 .btn-danger-custom {
-    background: #dc3545;
-    color: #fff;
+    background-color: #d13438;
+    color: #ffffff;
     border: none;
     padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.btn-danger-custom:hover {
+    background-color: #a80000;
 }

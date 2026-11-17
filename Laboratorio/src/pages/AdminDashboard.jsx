@@ -197,51 +197,80 @@ export default function AdminDashboard() {
             {activeTab === 'usuarios' && (
                 <div>
                     <h3>Gestión de Usuarios (Alumnos, Profesores y Administradores)</h3>
-                    <table className="dashboard-table">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Apellido</th>
-                                <th>Curso / Aula</th>
-                                <th>Email / Credencial</th>
-                                <th>Rol</th>
-                                <th>Computadora Asignada</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {usuarios.map(u => (
-                                <tr key={u.idUsuario}>
-                                    <td>{u.nombre}</td>
-                                    <td>{u.apellido || '-'}</td>
-                                    <td>{u.curso || '-'}</td>
-                                    <td>{u.email || u.email}</td>
-                                    <td>
-                                        <span className={u.rol === 'administrador' ? 'badge-admin' : 'badge-user'}>
-                                            {u.rol}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <select
-                                            defaultValue={u.computadoraId || ""}
-                                            onChange={(e) => handleAsignarComputadora(u.idUsuario, e.target.value)}
-                                            className="form-control"
-                                        >
-                                            <option value="">-- Sin asignar --</option>
-                                            {computadoras.map(c => (
-                                                <option key={c.idComputadora} value={c.idComputadora}>
-                                                    {c.nombre} {c.carrito ? `(Carrito: ${c.carrito.nombre})` : ''}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <button onClick={() => handleDelete('Usuarios', u.idUsuario)} className="btn-danger-custom">Eliminar</button>
-                                    </td>
+                    <div className="admin-table-wrapper">
+                        <table className="dashboard-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Apellido</th>
+                                    <th>Curso / Aula</th>
+                                    <th>Email / Credencial</th>
+                                    <th>Rol</th>
+                                    <th>Computadora Asignada</th>
+                                    <th>Acciones</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {usuarios.map(u => (
+                                    <tr key={u.idUsuario}>
+                                        <td>{u.nombre}</td>
+                                        <td>{u.apellido || '-'}</td>
+                                        <td>{u.curso || '-'}</td>
+                                        <td>{u.email}</td>
+                                        <td>
+                                            {/* Selector para cambiar el rol directamente */}
+                                            <select
+                                                value={u.rol || 'alumno'}
+                                                onChange={async (e) => {
+                                                    const nuevoRol = e.target.value;
+                                                    try {
+                                                        setMsg('');
+                                                        setError('');
+                                                        await api.put(`/Usuarios/${u.idUsuario}`, { rol: nuevoRol }, getAuthHeaders());
+                                                        setMsg(`¡Rol de ${u.nombre} actualizado a [${nuevoRol}] con éxito!`);
+                                                        fetchData();
+                                                    } catch (err) {
+                                                        setError(err.response?.data?.msg || 'Error al actualizar el rol');
+                                                    }
+                                                }}
+                                                className="form-control"
+                                                style={{
+                                                    padding: '6px',
+                                                    fontWeight: 'bold',
+                                                    background: u.rol === 'administrador' ? '#dff6dd' : '#faf9f8',
+                                                    color: u.rol === 'administrador' ? '#107c10' : '#323130',
+                                                    border: '1px solid #8a8886',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                <option value="alumno">Alumno</option>
+                                                <option value="profesor">Profesor</option>
+                                                <option value="administrador">Administrador</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select
+                                                defaultValue={u.computadoraId || ""}
+                                                onChange={(e) => handleAsignarComputadora(u.idUsuario, e.target.value)}
+                                                className="form-control"
+                                            >
+                                                <option value="">-- Sin asignar --</option>
+                                                {computadoras.map(c => (
+                                                    <option key={c.idComputadora} value={c.idComputadora}>
+                                                        {c.nombre} {c.carrito ? `(Carrito: ${c.carrito.nombre})` : ''}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button onClick={() => handleDelete('Usuarios', u.idUsuario)} className="btn-danger-custom">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
 

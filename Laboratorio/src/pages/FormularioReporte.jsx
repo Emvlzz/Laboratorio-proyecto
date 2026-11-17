@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './FormularioReporte.css'; // Opcional para tus estilos
+import './FormularioReporte.css';
 
 function FormularioReporte({ onReporteCreado }) {
     const [descripcion, setDescripcion] = useState('');

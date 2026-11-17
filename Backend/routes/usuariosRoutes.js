@@ -247,37 +247,43 @@ router.get('/mi-computadora', verificarToken, async (req, res) => {
     }
 });
 
-// PUT: El usuario actualiza el estado de su PC asignada desde su perfil
-router.put('/mi-computadora/estado', verificarToken, async (req, res) => {
+// PUT: Actualizar datos de un usuario por ID (Rol, Nombre, etc. - Solo Administrador)
+router.put('/:id', verificarToken, async (req, res) => {
     try {
-        const userId = req.user.id;
-        const { nuevoEstado } = req.body; // 'disponible', 'en uso', 'mantenimiento'
-
-        const usuario = await Usuario.findByPk(userId, {
-            include: [{ model: Computadora, as: 'computadora' }]
-        });
-
-        if (!usuario || !usuario.computadora) {
-            return res.status(404).json({ msg: 'No tienes una computadora asignada para actualizar.' });
+        if (req.user && req.user.rol !== 'administrador') {
+            return res.status(403).json({ msg: 'Acceso denegado. Solo administradores.' });
         }
 
-        const computadora = usuario.computadora;
-        const estadoAnterior = computadora.estado;
-        computadora.estado = nuevoEstado;
-        await computadora.save(); // <--- Guarda el cambio en la BD
+        const { id } = req.params;
+        const { nombre, apellido, curso, rol } = req.body;
 
+        const usuario = await Usuario.findByPk(id);
+        if (!usuario) {
+            return res.status(404).json({ msg: 'Usuario no encontrado' });
+        }
+
+        // Actualizamos los campos si se envían en el body
+        usuario.nombre = nombre !== undefined ? nombre : usuario.nombre;
+        usuario.apellido = apellido !== undefined ? apellido : usuario.apellido;
+        usuario.curso = curso !== undefined ? curso : usuario.curso;
+        usuario.rol = rol !== undefined ? rol : usuario.rol;
+
+        await usuario.save();
+
+        // Auditoría del cambio hecho por el admin
         await Auditoria.create({
-            descripcion: `Cambio de estado propio: El usuario ${usuario.nombre} cambió la PC "${computadora.nombre}" de [${estadoAnterior}] a [${nuevoEstado}].`,
-            idUsuario: userId,
+            descripcion: `Actualización de usuario: El administrador modificó los datos del usuario ID ${id} (Nuevo rol: ${usuario.rol}).`,
+            idUsuario: req.user.id || req.user.idUsuario,
             estado: 'exitoso'
         });
 
-        return res.json({ msg: 'Estado de la computadora actualizado con éxito', computadora });
+        res.json({ msg: '¡Usuario actualizado con éxito!', usuario });
     } catch (error) {
-        console.error("Error al cambiar estado de computadora:", error);
-        res.status(500).json({ msg: 'Error al actualizar estado', error: error.message });
+        console.error("Error al actualizar usuario:", error);
+        res.status(500).json({ msg: 'Error al actualizar usuario', error: error.message });
     }
 });
+
 
 
 module.exports = router;

@@ -15,6 +15,11 @@ const Computadora = sequelize.define('Computadora', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    estado: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'disponible' // Valor por defecto al crear una PC
+    },
     carritoId: {
         type: DataTypes.INTEGER,
         allowNull: true,

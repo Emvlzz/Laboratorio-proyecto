@@ -1,260 +1,303 @@
-.home-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding: 20px 0; /* Añadido para que respire si la lista es larga */
-}
-
-.home-card {
-    background: #ffffff;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+/* --- RESET Y PANTALLA COMPLETA --- */
+html, body, #root {
+    margin: 0;
+    padding: 0;
     width: 100%;
-    max-width: 450px;
-    text-align: center;
+    min-height: 100vh;
+    background-color: #f3f2f1 !important;
+    color: #323130;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    box-sizing: border-box;
 }
 
-/* Ampliamos ligeramente la tarjeta en Home para que entren bien los reportes */
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+/* Contenedor principal a ancho completo */
+.home-container {
+    width: 100% !important;
+    min-height: 100vh;
+    background-color: #f3f2f1;
+    padding: 30px 40px;
+    box-sizing: border-box;
+    margin: 0 !important;
+}
+
+/* Tarjeta contenedora extendida */
 .home-card-wide {
-    max-width: 600px;
+    background: #ffffff;
+    border: 1px solid #edebe9;
+    border-radius: 8px;
+    padding: 32px;
+    box-shadow: 0 1.6px 3.6px 0 rgba(0,0,0,0.13), 0 0.3px 0.9px 0 rgba(0,0,0,0.11);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .home-title {
-    color: #2c3e50;
-    font-size: 24px;
-    margin-bottom: 10px;
-    font-weight: 700;
+    font-size: 28px;
+    font-weight: 600;
+    color: #201f1e;
+    margin: 0 0 8px;
 }
 
 .home-subtitle {
-    color: #7f8c8d;
-    font-size: 14px;
-    margin-bottom: 30px;
-    line-height: 1.5;
+    font-size: 15px;
+    color: #605e5c;
+    margin: 0 0 24px;
 }
 
-/* Tarjeta de bienvenida del usuario */
+/* --- CAJA DE BIENVENIDA DE USUARIO --- */
 .user-welcome-box {
-    margin-bottom: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 6px;
-    border: 1px solid #e9ecef;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    text-align: center;
+    gap: 16px;
+    background-color: #faf9f8;
+    border: 1px solid #edebe9;
+    padding: 16px 20px;
+    border-radius: 6px;
+    margin-bottom: 24px;
 }
 
 .user-avatar {
-    width: 80px;
-    height: 80px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     object-fit: cover;
-    margin-bottom: 10px;
-    border: 2px solid #3498db;
+    border: 2px solid #0078d4;
 }
 
 .user-avatar-placeholder {
-    width: 80px;
-    height: 80px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
-    background: #e9ecef;
+    background-color: #f3f2f1;
+    border: 1px dashed #8a8886;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 10px;
-    color: #6c757d;
-    font-weight: bold;
-    font-size: 12px;
-}
-
-.user-welcome-title {
-    margin: 5px 0 4px 0;
-    font-size: 15px;
-    color: #2c3e50;
-    font-weight: bold;
-}
-
-.user-welcome-role {
-    margin: 0;
-    font-size: 13px;
-    color: #7f8c8d;
-    text-transform: capitalize;
-}
-
-.home-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.btn {
-    padding: 12px 20px;
-    border-radius: 6px;
-    font-size: 15px;
+    font-size: 11px;
     font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s ease-in-out;
-    display: inline-block;
+    color: #605e5c;
     text-align: center;
 }
 
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.user-welcome-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #201f1e;
+    margin: 0;
+}
+
+.user-welcome-role {
+    font-size: 13px;
+    color: #605e5c;
+    margin: 4px 0 0;
+}
+
+/* --- BOTONES DE ACCIÓN PRINCIPAL --- */
+.home-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #edebe9;
+}
+
+.btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease;
 }
 
 .btn-profile {
-    background-color: #17a2b8;
-    color: #fff;
+    background-color: #0078d4;
+    color: #ffffff;
 }
-
-.btn-primary {
-    background-color: #3498db;
-    color: #fff;
-}
-
-.btn-success {
-    background-color: #2ecc71;
-    color: #fff;
-}
-
-.btn-info {
-    background-color: #1abc9c;
-    color: #fff;
-}
-
-.btn-danger {
-    background-color: #e74c3c;
-    color: #fff;
-}
+.btn-profile:hover { background-color: #106ebe; }
 
 .btn-admin {
-    background-color: #34495e;
-    color: #fff;
+    background-color: #107c10;
+    color: #ffffff;
 }
+.btn-admin:hover { background-color: #0e6b0e; }
+
+.btn-danger {
+    background-color: #d13438;
+    color: #ffffff;
+}
+.btn-danger:hover { background-color: #a80000; }
+
+.btn-success {
+    background-color: #107c10;
+    color: #ffffff;
+}
+.btn-success:hover { background-color: #0e6b0e; }
+
+.btn-info {
+    background-color: #0078d4;
+    color: #ffffff;
+}
+.btn-info:hover { background-color: #106ebe; }
 
 .btn-full {
     width: 100%;
+    margin-top: 8px;
 }
 
-/* --- SECCIÓN NUEVA: Reportes en el Home --- */
+/* --- SECCIÓN DE REPORTES (GRID DE 2 COLUMNAS) --- */
 .reportes-section {
-    border-top: 1px solid #e9ecef;
-    margin-top: 30px;
-    padding-top: 20px;
-    text-align: left;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.reporte-form-box {
-    background: #f8f9fa;
-    padding: 20px;
+@media (max-width: 900px) {
+    .reportes-section {
+        grid-template-columns: 1fr;
+    }
+}
+
+.reporte-form-box, .mis-reportes-box {
+    background-color: #faf9f8;
+    border: 1px solid #edebe9;
     border-radius: 8px;
-    margin-bottom: 25px;
-    border: 1px solid #e9ecef;
+    padding: 24px;
+    box-sizing: border-box;
 }
 
-.reporte-form-box h3,
-.mis-reportes-box h3 {
-    color: #2c3e50;
-    font-size: 18px;
-    margin-bottom: 15px;
+.reporte-form-box h3, .mis-reportes-box h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #201f1e;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #edebe9;
 }
 
+/* Formularios de reportes con alto contraste (Fondo blanco y texto oscuro) */
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 16px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 6px;
-    font-size: 14px;
-    color: #34495e;
+    font-size: 13px;
     font-weight: 600;
+    margin-bottom: 6px;
+    color: #323130;
 }
 
-.form-group input,
+.form-group input, 
 .form-group textarea {
     width: 100%;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #ced4da;
-    box-sizing: border-box;
-    font-family: inherit;
+    padding: 10px 12px;
+    background-color: #ffffff !important;
+    color: #323130 !important;
+    border: 1px solid #8a8886;
+    border-radius: 4px;
     font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.form-group input:focus,
+.form-group input:focus, 
 .form-group textarea:focus {
     outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+    border-color: #0078d4;
+    box-shadow: 0 0 0 1px #0078d4;
 }
 
+/* Mensajes de feedback */
 .msg-success {
-    color: #2ecc71;
-    margin-top: 10px;
-    font-size: 14px;
-    font-weight: 600;
+    background-color: #dff6dd;
+    color: #107c10;
+    border: 1px solid #b8e6b4;
+    padding: 10px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    margin-top: 12px;
+    font-weight: 500;
 }
 
 .msg-error {
-    color: #e74c3c;
-    margin-top: 10px;
-    font-size: 14px;
-    font-weight: 600;
+    background-color: #fde7e9;
+    color: #a80000;
+    border: 1px solid #f9c2c6;
+    padding: 10px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    margin-top: 12px;
+    font-weight: 500;
 }
 
+/* Lista de reportes del usuario */
 .no-reports-text {
-    color: #7f8c8d;
     font-size: 14px;
-    font-style: italic;
+    color: #605e5c;
+    margin: 0;
 }
 
 .reportes-list {
     list-style: none;
     padding: 0;
-    max-height: 320px;
-    overflow-y: auto;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 380px;
+    overflow-y: auto;
 }
 
 .reporte-item {
-    border: 1px solid #e9ecef;
-    padding: 15px;
-    border-radius: 6px;
-    margin-bottom: 12px;
     background: #ffffff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    border: 1px solid #edebe9;
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .reporte-item p {
-    margin: 0 0 6px 0;
+    margin: 0 0 8px;
     font-size: 14px;
-    color: #2c3e50;
 }
 
 .estado-badge {
-    font-weight: bold;
-    text-transform: capitalize;
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 12px;
+    text-transform: uppercase;
 }
 
 .estado-badge.pendiente {
-    color: #e74c3c;
+    background-color: #fff4ce;
+    color: #8a6116;
 }
 
 .estado-badge.resuelto {
-    color: #2ecc71;
+    background-color: #dff6dd;
+    color: #107c10;
 }
 
 .reporte-date {
-    color: #95a5a6;
+    display: block;
     font-size: 12px;
+    color: #605e5c;
+    margin-top: 6px;
 }

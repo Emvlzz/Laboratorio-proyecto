@@ -1,0 +1,122 @@
+.register-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f3f2f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.register-card {
+    background: #ffffff;
+    border: 1px solid #edebe9;
+    border-radius: 8px;
+    padding: 40px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 1.6px 3.6px 0 rgba(0,0,0,0.13), 0 0.3px 0.9px 0 rgba(0,0,0,0.11);
+    box-sizing: border-box;
+}
+
+.register-header h2 {
+    font-size: 26px;
+    font-weight: 600;
+    color: #201f1e;
+    margin: 0 0 6px;
+}
+
+.register-header p {
+    font-size: 14px;
+    color: #605e5c;
+    margin: 0 0 24px;
+}
+
+.register-alert {
+    padding: 10px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.register-alert-error {
+    background-color: #fde7e9;
+    color: #a80000;
+    border: 1px solid #f9c2c6;
+}
+
+.register-alert-success {
+    background-color: #dff6dd;
+    color: #107c10;
+    border: 1px solid #b8e6b4;
+}
+
+.register-field {
+    margin-bottom: 16px;
+}
+
+.register-field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #323130;
+}
+
+/* Campos de escritura con alto contraste (Fondo blanco y texto oscuro) */
+.register-field input {
+    width: 100%;
+    padding: 10px 12px;
+    background-color: #ffffff !important;
+    color: #323130 !important;
+    border: 1px solid #8a8886;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+    font-family: inherit;
+    transition: border-color 0.15s ease;
+}
+
+.register-field input:focus {
+    outline: none;
+    border-color: #0078d4;
+    box-shadow: 0 0 0 1px #0078d4;
+}
+
+.register-btn {
+    width: 100%;
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    margin-top: 8px;
+}
+
+.register-btn:hover {
+    background-color: #106ebe;
+}
+
+.register-footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: #605e5c;
+}
+
+.register-footer a {
+    color: #0078d4;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.register-footer a:hover {
+    text-decoration: underline;
+}

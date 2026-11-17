@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import api from '../services/api';
+import './Login.css';
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -10,35 +10,73 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
         try {
-            const res = await api.post('/auth/login', { email, password });
-            localStorage.setItem('token', res.data.token);
-            localStorage.setItem('rol', res.data.rol);
-            localStorage.setItem('nombre', res.data.nombre);
-            navigate('/'); // Redirige al Home
+            const response = await fetch('http://localhost:3000/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.json();
+            
+            if (response.ok) {
+                // 1. Guardamos el token
+                localStorage.setItem('token', data.token);
+                
+                // 2. GUARDAMOS EL ROL (Esto era lo que faltaba)
+                // Dependiendo de cómo lo devuelva tu backend, puede venir en data.usuario.rol o data.rol
+                const rolUsuario = data.usuario?.rol || data.rol || 'alumno';
+                localStorage.setItem('rol', rolUsuario);
+
+                navigate('/');
+            } else {
+                setError(data.msg || 'Credenciales inválidas');
+            }
         } catch (err) {
-            setError(err.response?.data?.msg || 'Error al iniciar sesión');
+            setError('Error de conexión con el servidor');
         }
     };
 
     return (
-        <div style={{ maxWidth: 400, margin: '50px auto', padding: 25, border: '1px solid #ddd', borderRadius: 8, boxShadow: '0 2px 4px rgba(0,0,0,0.1)', fontFamily: 'sans-serif' }}>
-            <h2>Iniciar Sesión</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: 15 }}>
-                    <label>Correo Electrónico:</label><br />
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={{ width: '100%', padding: 8, boxSizing: 'border-box' }} />
+        <div className="login-wrapper">
+            <div className="login-card">
+                <div className="login-header">
+                    <h2>Iniciar Sesión</h2>
+                    <p>Accede al sistema de gestión de laboratorio</p>
                 </div>
-                <div style={{ marginBottom: 15 }}>
-                    <label>Contraseña:</label><br />
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ width: '100%', padding: 8, boxSizing: 'border-box' }} />
+
+                {error && <div className="login-alert">{error}</div>}
+
+                <form onSubmit={handleSubmit} className="login-form">
+                    <div className="login-field">
+                        <label>Correo Electrónico</label>
+                        <input 
+                            type="email" 
+                            value={email} 
+                            onChange={(e) => setEmail(e.target.value)} 
+                            required 
+                            placeholder="correo@ejemplo.com"
+                        />
+                    </div>
+
+                    <div className="login-field">
+                        <label>Contraseña</label>
+                        <input 
+                            type="password" 
+                            value={password} 
+                            onChange={(e) => setPassword(e.target.value)} 
+                            required 
+                            placeholder="••••••••"
+                        />
+                    </div>
+
+                    <button type="submit" className="login-btn">Entrar</button>
+                </form>
+
+                <div className="login-footer">
+                    <p>¿No tienes una cuenta? <Link to="/register">Regístrate</Link></p>
                 </div>
-                <button type="submit" style={{ width: '100%', padding: 10, background: '#007bff', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Entrar</button>
-            </form>
-            <p style={{ marginTop: 15, textAlign: 'center' }}>
-                ¿No tienes una cuenta? <Link to="/register" style={{ color: '#007bff' }}>Regístrate aquí</Link>
-            </p>
+            </div>
         </div>
     );
 }

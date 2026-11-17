@@ -1,132 +1,114 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import api from '../services/api';
+import './Register.css';
 
 export default function Register() {
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
     const [curso, setCurso] = useState('');
-    const [email, setEmail] = useState(''); // <--- Cambiado de email a email
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [rol, setRol] = useState('alumno');
-    
     const [error, setError] = useState('');
     const [msg, setMsg] = useState('');
     const navigate = useNavigate();
 
-    const handleRegister = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setMsg('');
 
         try {
-            await api.post('/auth/register', {
-                nombre,
-                apellido,
-                curso,
-                email, // <--- Enviamos email en lugar de email
-                password,
-                rol
+            const response = await fetch('http://localhost:3000/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, apellido, curso, email, password })
             });
 
-            setMsg('¡Registro exitoso! Redirigiendo al inicio de sesión...');
-            setTimeout(() => {
-                navigate('/login');
-            }, 1500);
+            const data = await response.json();
+
+            if (response.ok) {
+                setMsg('¡Cuenta creada con éxito! Redirigiendo al login...');
+                setTimeout(() => {
+                    navigate('/login');
+                }, 2000);
+            } else {
+                setError(data.msg || 'Error al registrar la cuenta');
+            }
         } catch (err) {
-            setError(err.response?.data?.msg || 'Error al intentar registrar el usuario');
+            setError('Error de conexión con el servidor');
         }
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', fontFamily: 'sans-serif' }}>
-            <div style={{ background: '#ffffff', padding: '40px', borderRadius: '12px', width: '100%', maxWidth: '450px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}>
-                <h2 style={{ textAlign: 'center', color: '#2c3e50', marginBottom: '20px' }}>Registro de Usuario</h2>
+        <div className="register-wrapper">
+            <div className="register-card">
+                <div className="register-header">
+                    <h2>Crear Cuenta</h2>
+                    <p>Regístrate en el sistema de gestión del laboratorio</p>
+                </div>
 
-                {error && <p style={{ color: 'red', background: '#f8d7da', padding: '10px', borderRadius: '4px', fontSize: '14px', textAlign: 'center' }}>{error}</p>}
-                {msg && <p style={{ color: 'green', background: '#d4edda', padding: '10px', borderRadius: '4px', fontSize: '14px', textAlign: 'center' }}>{msg}</p>}
+                {error && <div className="register-alert register-alert-error">{error}</div>}
+                {msg && <div className="register-alert register-alert-success">{msg}</div>}
 
-                <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                    <div>
-                        <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>Nombre:</label>
+                <form onSubmit={handleSubmit} className="register-form">
+                    <div className="register-field">
+                        <label>Nombre</label>
                         <input 
                             type="text" 
                             value={nombre} 
                             onChange={(e) => setNombre(e.target.value)} 
                             required 
-                            style={{ width: '100%', padding: '10px', marginTop: '5px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }} 
+                            placeholder="Tu nombre"
                         />
                     </div>
 
-                    <div>
-                        <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>Apellido:</label>
+                    <div className="register-field">
+                        <label>Apellido</label>
                         <input 
                             type="text" 
                             value={apellido} 
                             onChange={(e) => setApellido(e.target.value)} 
-                            required 
-                            style={{ width: '100%', padding: '10px', marginTop: '5px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }} 
+                            placeholder="Tu apellido"
                         />
                     </div>
 
-                    <div>
-                        <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>Curso / Aula:</label>
+                    <div className="register-field">
+                        <label>Curso / Aula</label>
                         <input 
                             type="text" 
                             value={curso} 
                             onChange={(e) => setCurso(e.target.value)} 
-                            placeholder="Ej: 3° Año Informática" 
-                            style={{ width: '100%', padding: '10px', marginTop: '5px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }} 
+                            placeholder="Ej: 5° Año Informática"
                         />
                     </div>
 
-                    <div>
-                        <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>Correo Electrónico (Email):</label>
+                    <div className="register-field">
+                        <label>Correo Electrónico</label>
                         <input 
-                            type="email" // <--- Tipo email para validación en navegador
+                            type="email" 
                             value={email} 
                             onChange={(e) => setEmail(e.target.value)} 
                             required 
-                            style={{ width: '100%', padding: '10px', marginTop: '5px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }} 
+                            placeholder="correo@ejemplo.com"
                         />
                     </div>
 
-                    <div>
-                        <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>Contraseña:</label>
+                    <div className="register-field">
+                        <label>Contraseña</label>
                         <input 
                             type="password" 
                             value={password} 
                             onChange={(e) => setPassword(e.target.value)} 
                             required 
-                            style={{ width: '100%', padding: '10px', marginTop: '5px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }} 
+                            placeholder="••••••••"
                         />
                     </div>
 
-                    <div>
-                        <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>Rol:</label>
-                        <select 
-                            value={rol} 
-                            onChange={(e) => setRol(e.target.value)} 
-                            style={{ width: '100%', padding: '10px', marginTop: '5px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px', background: '#fff' }}
-                        >
-                            <option value="alumno">Alumno</option>
-                            <option value="profesor">Profesor</option>
-                            <option value="administrador">Administrador</option>
-                        </select>
-                    </div>
-
-                    <button 
-                        type="submit" 
-                        style={{ background: '#17a2b8', color: '#fff', border: 'none', padding: '12px', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' }}
-                    >
-                        Registrarse
-                    </button>
+                    <button type="submit" className="register-btn">Registrarse</button>
                 </form>
 
-                <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                    <Link to="/login" style={{ color: '#007bff', textDecoration: 'none', fontSize: '14px' }}>
-                        ¿Ya tienes cuenta? Inicia sesión aquí
-                    </Link>
+                <div className="register-footer">
+                    <p>¿Ya tienes una cuenta? <Link to="/login">Inicia sesión</Link></p>
                 </div>
             </div>
         </div>

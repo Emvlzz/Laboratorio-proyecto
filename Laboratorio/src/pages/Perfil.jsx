@@ -10,10 +10,7 @@ export default function Perfil() {
     const [password, setPassword] = useState('');
     const [foto, setFoto] = useState(null); 
     const [fotoActual, setFotoActual] = useState(''); 
-    
-    // Estados para la computadora asignada
     const [miCompu, setMiCompu] = useState(null);
-    const [estadoCompu, setEstadoCompu] = useState('');
     
     const [msg, setMsg] = useState('');
     const [error, setError] = useState('');
@@ -21,7 +18,6 @@ export default function Perfil() {
 
     const token = localStorage.getItem('token');
 
-    // Cargar los datos del perfil y la computadora al montar el componente
     useEffect(() => {
         const fetchPerfilYCompu = async () => {
             if (!token) {
@@ -30,13 +26,9 @@ export default function Perfil() {
             }
 
             try {
-                // 1. Cargar datos del perfil
                 const response = await fetch('http://localhost:3000/Usuarios/perfil', {
-                    headers: { 
-                        'Authorization': `Bearer ${token}` 
-                    }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
                 const data = await response.json();
 
                 if (response.ok) {
@@ -59,18 +51,15 @@ export default function Perfil() {
                     }
                 }
 
-                // 2. Cargar computadora asignada al usuario
                 const resCompu = await fetch('http://localhost:3000/Usuarios/mi-computadora', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const compuData = await resCompu.json();
                 if (compuData.asignada) {
                     setMiCompu(compuData.computadora);
-                    setEstadoCompu(compuData.computadora.estado || 'disponible');
                 }
-
             } catch (err) {
-                console.error('Error de red al cargar perfil o computadora:', err);
+                console.error('Error de red:', err);
                 setError('Error de conexión con el servidor');
             }
         };
@@ -78,7 +67,6 @@ export default function Perfil() {
         fetchPerfilYCompu();
     }, [token, navigate]);
 
-    // Manejar la actualización del perfil
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMsg('');
@@ -94,16 +82,13 @@ export default function Perfil() {
             if (password.trim() !== '') {
                 formData.append('password', password);
             }
-
             if (foto) {
                 formData.append('fotoPerfil', foto);
             }
 
             const response = await fetch('http://localhost:3000/Usuarios/perfil', {
                 method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
+                headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
             });
 
@@ -115,53 +100,24 @@ export default function Perfil() {
                 setFoto(null);
 
                 if (data.usuario && data.usuario.fotoPerfil) {
-                    const rutaDevuelta = data.usuario.fotoPerfil;
-                    const urlCompleta = rutaDevuelta.startsWith('http') 
-                        ? rutaDevuelta 
-                        : `http://localhost:3000/${rutaDevuelta}`;
+                    const urlCompleta = data.usuario.fotoPerfil.startsWith('http') 
+                        ? data.usuario.fotoPerfil 
+                        : `http://localhost:3000/${data.usuario.fotoPerfil}`;
                     setFotoActual(urlCompleta);
                 }
             } else {
                 setError(data.msg || 'Error al actualizar el perfil');
             }
         } catch (err) {
-            console.error('Error crítico en handleSubmit:', err);
             setError('Error de conexión al enviar los datos');
         }
     };
 
-    // Función para cambiar el estado de la computadora asignada
-    const handleCambiarEstadoPC = async (nuevoEstado) => {
-        setMsg('');
-        setError('');
-        try {
-            const res = await fetch('http://localhost:3000/Usuarios/mi-computadora/estado', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ nuevoEstado })
-            });
-            const data = await res.json();
-            if (res.ok) {
-                setEstadoCompu(nuevoEstado);
-                setMsg('¡Estado de la computadora actualizado con éxito!');
-            } else {
-                setError(data.msg || 'Error al cambiar el estado de la PC');
-            }
-        } catch (err) {
-            setError('Error de conexión al actualizar el estado.');
-        }
-    };
-
-    // Función para solicitar la recuperación de contraseña
     const handleSolicitarRecuperacion = async () => {
         if (!email) {
-            setError('No se encontró un correo electrónico válido para la recuperación.');
+            setError('No se encontró un correo electrónico válido.');
             return;
         }
-
         try {
             const response = await fetch('http://localhost:3000/auth/forgot-password', {
                 method: 'POST',
@@ -169,37 +125,30 @@ export default function Perfil() {
                 body: JSON.stringify({ email })
             });
             const data = await response.json();
-            if (response.ok) {
-                setMsg('Se ha enviado un correo de recuperación a tu casilla.');
-            } else {
-                setError(data.msg || 'Error al solicitar la recuperación.');
-            }
+            if (response.ok) setMsg('Se ha enviado un correo de recuperación a tu casilla.');
+            else setError(data.msg || 'Error al solicitar recuperación.');
         } catch (err) {
-            setError('Error de conexión al solicitar recuperación.');
+            setError('Error de conexión.');
         }
     };
 
-    // Función para eliminar la cuenta propia
     const handleEliminarCuenta = async () => {
-        if (!window.confirm('¿Estás completamente seguro de que deseas eliminar tu cuenta permanentemente? Esta acción no se puede deshacer.')) {
-            return;
-        }
+        if (!window.confirm('¿Estás seguro de que deseas eliminar tu cuenta permanentemente?')) return;
 
         try {
             const responsePerfil = await fetch('http://localhost:3000/Usuarios/perfil', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const userData = await responsePerfil.json();
-            const userId = userData.idUsuario;
 
-            const response = await fetch(`http://localhost:3000/Usuarios/${userId}`, {
+            const response = await fetch(`http://localhost:3000/Usuarios/${userData.idUsuario}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
             if (response.ok) {
                 localStorage.clear();
-                alert('Tu cuenta ha sido eliminada con éxito.');
+                alert('Cuenta eliminada con éxito.');
                 navigate('/login');
             } else {
                 const data = await response.json();
@@ -211,168 +160,138 @@ export default function Perfil() {
     };
 
     return (
-        <div className="perfil-container">
-            <div className="perfil-back-wrapper">
-                <Link to="/" className="perfil-back-link">
-                    ← Volver al Inicio
-                </Link>
-            </div>
+        <div className="perfil-page-wrapper">
+            <div className="perfil-page-container">
+                <nav className="perfil-nav">
+                    <Link to="/" className="perfil-back-link">
+                        ← Volver al Inicio
+                    </Link>
+                </nav>
 
-            <h2 className="perfil-title">Mi Perfil y Configuración</h2>
+                <header className="perfil-header">
+                    <h2>Mi Perfil y Configuración</h2>
+                    <p>Gestiona tu información personal, seguridad y equipos asignados</p>
+                </header>
 
-            {msg && <p className="msg-success">{msg}</p>}
-            {error && <p className="msg-error">{error}</p>}
+                {msg && <div className="perfil-alert perfil-alert-success">{msg}</div>}
+                {error && <div className="perfil-alert perfil-alert-error">{error}</div>}
 
-            <form onSubmit={handleSubmit} className="perfil-form">
-                
-                <div className="form-group" style={{ textAlign: 'center', marginBottom: '20px' }}>
-                    {fotoActual ? (
-                        <img 
-                            src={fotoActual} 
-                            alt="Foto de perfil" 
-                            style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', marginBottom: '10px', border: '2px solid #ddd' }} 
-                        />
-                    ) : (
-                        <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: '#e9ecef', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px', color: '#6c757d', fontWeight: 'bold' }}>
-                            Sin foto
+                <div className="perfil-layout-grid">
+                    {/* Formulario Principal */}
+                    <form onSubmit={handleSubmit} className="perfil-card">
+                        <h3>Información Personal</h3>
+                        
+                        <div className="perfil-avatar-box">
+                            {fotoActual ? (
+                                <img src={fotoActual} alt="Avatar" className="perfil-avatar-img" />
+                            ) : (
+                                <div className="perfil-avatar-placeholder">Sin foto</div>
+                            )}
+                            <div className="perfil-avatar-upload">
+                                <label>Cambiar foto de perfil</label>
+                                <input 
+                                    type="file" 
+                                    accept="image/*"
+                                    onChange={(e) => setFoto(e.target.files[0])} 
+                                />
+                            </div>
                         </div>
-                    )}
-                    <br />
-                    <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px' }}>Cambiar foto de perfil:</label>
-                    <input 
-                        type="file" 
-                        accept="image/*"
-                        onChange={(e) => setFoto(e.target.files[0])} 
-                        className="form-control" 
-                    />
-                </div>
 
-                <div className="form-group">
-                    <label>Nombre:</label>
-                    <input 
-                        type="text" 
-                        value={nombre} 
-                        onChange={(e) => setNombre(e.target.value)} 
-                        required 
-                        className="form-control" 
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Apellido:</label>
-                    <input 
-                        type="text" 
-                        value={apellido} 
-                        onChange={(e) => setApellido(e.target.value)} 
-                        className="form-control" 
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Curso / Aula:</label>
-                    <input 
-                        type="text" 
-                        value={curso} 
-                        onChange={(e) => setCurso(e.target.value)} 
-                        className="form-control" 
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Correo Electrónico (Email):</label>
-                    <input 
-                        type="email" 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)} 
-                        required 
-                        className="form-control" 
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Nueva Contraseña (dejar en blanco para no cambiar):</label>
-                    <input 
-                        type="password" 
-                        value={password} 
-                        onChange={(e) => setPassword(e.target.value)} 
-                        placeholder="••••••••" 
-                        className="form-control" 
-                    />
-                </div>
-
-                <button type="submit" className="btn-submit">
-                    Guardar Cambios
-                </button>
-            </form>
-
-            {/* SECCIÓN COMPUTADORA ASIGNADA */}
-            <div style={{ marginTop: '30px', padding: '20px', border: '1px solid #c3cfe2', borderRadius: '8px', background: '#f8f9fa' }}>
-                <h3 style={{ color: '#2c3e50', marginTop: 0 }}>💻 Mi Computadora Asignada</h3>
-                {miCompu ? (
-                    <div>
-                        <p><strong>Equipo:</strong> {miCompu.nombre}</p>
-                        <p><strong>Carrito:</strong> {miCompu.carrito ? `${miCompu.carrito.nombre} (Curso: ${miCompu.carrito.curso})` : 'Sin Carrito'}</p>
-                        <p>
-                            <strong>Estado Actual:</strong>{' '}
-                            <span style={{ 
-                                padding: '4px 8px', 
-                                borderRadius: '4px', 
-                                fontWeight: 'bold',
-                                color: '#fff',
-                                background: estadoCompu === 'disponible' ? '#28a745' : estadoCompu === 'en uso' ? '#007bff' : '#dc3545'
-                            }}>
-                                {estadoCompu.toUpperCase()}
-                            </span>
-                        </p>
-
-                        <div style={{ marginTop: '15px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                            <button 
-                                type="button" 
-                                onClick={() => handleCambiarEstadoPC('en uso')}
-                                style={{ background: '#007bff', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer' }}
-                            >
-                                Marcar En Uso
-                            </button>
-
-                            <button 
-                                type="button" 
-                                onClick={() => handleCambiarEstadoPC('disponible')}
-                                style={{ background: '#28a745', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer' }}
-                            >
-                                Marcar Disponible / Libre
-                            </button>
-
-                            <button 
-                                type="button" 
-                                onClick={() => handleCambiarEstadoPC('mantenimiento')}
-                                style={{ background: '#ffc107', color: '#000', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-                            >
-                                Reportar Mantenimiento
-                            </button>
+                        <div className="perfil-field">
+                            <label>Nombre</label>
+                            <input 
+                                type="text" 
+                                value={nombre} 
+                                onChange={(e) => setNombre(e.target.value)} 
+                                required 
+                            />
                         </div>
-                    </div>
-                ) : (
-                    <p style={{ color: '#6c757d' }}>No tienes ninguna computadora asignada actualmente por el administrador.</p>
-                )}
-            </div>
 
-            {/* Botones adicionales de cuenta */}
-            <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <button 
-                    type="button" 
-                    onClick={handleSolicitarRecuperacion}
-                    style={{ background: '#17a2b8', color: '#fff', border: 'none', padding: '10px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-                >
-                    Recuperar Contraseña por Correo
-                </button>
+                        <div className="perfil-field">
+                            <label>Apellido</label>
+                            <input 
+                                type="text" 
+                                value={apellido} 
+                                onChange={(e) => setApellido(e.target.value)} 
+                            />
+                        </div>
 
-                <button 
-                    type="button" 
-                    onClick={handleEliminarCuenta}
-                    style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '10px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-                >
-                    Eliminar mi Cuenta
-                </button>
+                        <div className="perfil-field">
+                            <label>Curso / Aula</label>
+                            <input 
+                                type="text" 
+                                value={curso} 
+                                onChange={(e) => setCurso(e.target.value)} 
+                            />
+                        </div>
+
+                        <div className="perfil-field">
+                            <label>Correo Electrónico</label>
+                            <input 
+                                type="email" 
+                                value={email} 
+                                onChange={(e) => setEmail(e.target.value)} 
+                                required 
+                            />
+                        </div>
+
+                        <div className="perfil-field">
+                            <label>Nueva Contraseña</label>
+                            <input 
+                                type="password" 
+                                value={password} 
+                                onChange={(e) => setPassword(e.target.value)} 
+                                placeholder="Dejar en blanco para mantener la actual" 
+                            />
+                        </div>
+
+                        <button type="submit" className="perfil-btn perfil-btn-primary">
+                            Guardar Cambios
+                        </button>
+                    </form>
+
+                    {/* Columna Lateral */}
+                    <aside className="perfil-aside">
+                        <section className="perfil-card">
+                            <h3>Mi Computadora Asignada</h3>
+                            {miCompu ? (
+                                <div className="perfil-compu-details">
+                                    <p><strong>Equipo:</strong> {miCompu.nombre}</p>
+                                    <p><strong>Carrito:</strong> {miCompu.carrito ? miCompu.carrito.nombre : 'Sin Carrito'}</p>
+                                    <p>
+                                        <strong>Estado:</strong>{' '}
+                                        <span className={`perfil-badge ${(miCompu.estado || 'disponible').replace(/\s+/g, '-')}`}>
+                                            {miCompu.estado || 'disponible'}
+                                        </span>
+                                    </p>
+                                </div>
+                            ) : (
+                                <p className="perfil-muted">No tienes ninguna computadora asignada actualmente.</p>
+                            )}
+                        </section>
+
+                        <section className="perfil-card">
+                            <h3>Seguridad y Cuenta</h3>
+                            <div className="perfil-actions-stack">
+                                <button 
+                                    type="button" 
+                                    className="perfil-btn perfil-btn-secondary"
+                                    onClick={handleSolicitarRecuperacion}
+                                >
+                                    Recuperar Contraseña
+                                </button>
+
+                                <button 
+                                    type="button" 
+                                    className="perfil-btn perfil-btn-danger"
+                                    onClick={handleEliminarCuenta}
+                                >
+                                    Eliminar mi Cuenta
+                                </button>
+                            </div>
+                        </section>
+                    </aside>
+                </div>
             </div>
         </div>
     );

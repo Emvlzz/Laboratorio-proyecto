@@ -23,12 +23,12 @@ const httpServer = http.createServer(app);
 
 // 1. Definimos los únicos orígenes permitidos (localhost y tu IP de red local)
 const allowedOrigins = [
-    'http://localhost:5173',
+    'http://localhost:5173',     
     'http://192.168.1.4:5173',
-    'http://181.80.139.118:5173'
+    'http://181.80.139.118:5173',
 ];
 
-// 2. Configurar Socket.io limitando los orígenes a la lista blanca
+// 2. Configurar Socket.io limitando los orígenes a la lista de origenes permitidos
 const io = new Server(httpServer, {
     cors: {
         origin: allowedOrigins,
@@ -40,13 +40,12 @@ const io = new Server(httpServer, {
 
 app.use(express.json());
 
-// Guardamos 'io' globalmente para usarlo en los controladores
 app.set('socketio', io);
 
 // Hacer pública la carpeta 'uploads'
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// 3. Middleware de CORS estricto para Express usando la lista blanca
+// 3. Middleware de CORS estricto para Express usando la lista de origenes permitidos
 app.use((req, res, next) => {
     const origin = req.headers.origin;
     
